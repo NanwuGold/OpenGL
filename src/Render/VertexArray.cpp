@@ -1,29 +1,11 @@
-#include <hzpch.h>
-
 #include "VertexArray.h"
+#include "OpenGLVertexArray.h"
+#include "pointer_ptr.hpp"
 
-#include <Hazel/Core/Log.h>
-
-#include <Hazel/Renderer/Renderer.h>
-#include <Platform/OpenGL/OpenGLVertexArray.h>
-
-namespace Hazel
+namespace FXAA
 {
-    Ref<VertexArray> Hazel::VertexArray::Create()
+    Ref<VertexArray> VertexArray::Create()
     {
-        HZ_PROFILE_FUNCTION()
-
-        switch (Renderer::GetAPI())
-        {
-            case RendererAPI::API::None:
-            HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported!")
-            case RendererAPI::API::OpenGL:
-                return std::make_shared<OpenGLVertexArray>();
-        }
-
-        HZ_CORE_ASSERT(false, "Unknown RendererAPI!")
-        return nullptr;
+        return std::make_shared<OpenGLVertexArray>();
     }
-
-
 }

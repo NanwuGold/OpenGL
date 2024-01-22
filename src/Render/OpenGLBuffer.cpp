@@ -1,30 +1,22 @@
-#include <hzpch.h>
-
 #include "OpenGLBuffer.h"
-
 #include <glad/glad.h>
-
-namespace Hazel
+namespace FXAA
 {
     /////////////////////////////////////////////////////////////////////////
     // VertexBuffer /////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
 
     OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
-        : m_RendererID(0)
+            : m_RendererID(0)
     {
-        HZ_PROFILE_FUNCTION()
-
         glCreateBuffers(1, &m_RendererID);
         glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
         glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
     }
 
     OpenGLVertexBuffer::OpenGLVertexBuffer(float *vertices, uint32_t size)
-        : m_RendererID(0)
+            : m_RendererID(0)
     {
-        HZ_PROFILE_FUNCTION()
-
         glCreateBuffers(1, &m_RendererID);
         glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
         glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
@@ -37,29 +29,21 @@ namespace Hazel
 
     void OpenGLVertexBuffer::Bind() const
     {
-        HZ_PROFILE_FUNCTION()
-
         glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
     }
 
     void OpenGLVertexBuffer::UnBind() const
     {
-        HZ_PROFILE_FUNCTION()
-
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
     void OpenGLVertexBuffer::SetLayout(const BufferLayout &layout)
     {
-        HZ_PROFILE_FUNCTION()
-
         m_Layout = layout;
     }
 
     const BufferLayout &OpenGLVertexBuffer::GetLayout() const
     {
-        HZ_PROFILE_FUNCTION()
-
         return m_Layout;
     }
 
@@ -80,10 +64,8 @@ namespace Hazel
     /////////////////////////////////////////////////////////////////////////
 
     OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t *indices, uint32_t count)
-        : m_Count(count), m_RendererID(0)
+            : m_Count(count), m_RendererID(0)
     {
-        HZ_PROFILE_FUNCTION()
-
         glCreateBuffers(1, &m_RendererID);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(uint32_t) * count), indices,
@@ -92,30 +74,21 @@ namespace Hazel
 
     OpenGLIndexBuffer::~OpenGLIndexBuffer()
     {
-        HZ_PROFILE_FUNCTION()
-
         glDeleteBuffers(1, &m_RendererID);
     }
 
     void OpenGLIndexBuffer::Bind() const
     {
-        HZ_PROFILE_FUNCTION()
-
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
     }
 
     void OpenGLIndexBuffer::UnBind() const
     {
-        HZ_PROFILE_FUNCTION()
-
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     uint32_t OpenGLIndexBuffer::GetCount()
     {
-        HZ_PROFILE_FUNCTION()
-
         return m_Count;
     }
-
-} // Hazel
+}
