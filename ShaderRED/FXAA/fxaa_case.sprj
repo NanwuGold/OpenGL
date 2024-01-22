@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <project version="2">
 	<pipeline>
-		<pass name="Simple" type="shader" active="true" patchverts="1">
-			<shader type="vs" path="shaders/fxaa_case_SimpleVS.glsl" entry="main" />
-			<shader type="ps" path="shaders/fxaa_case_SimplePS.glsl" entry="main" />
+		<pass name="Simple" type="OGLShader" active="true" patchverts="1">
+			<OGLShader type="vs" path="shaders/fxaa_case_SimpleVS.glsl" entry="main" />
+			<OGLShader type="ps" path="shaders/fxaa_case_SimplePS.glsl" entry="main" />
 			<inputlayout>
 				<item value="Position" semantic="POSITION" />
 				<item value="Normal" semantic="NORMAL" />
@@ -34,8 +34,8 @@
 	<cameras />
 	<settings>
 		<entry type="property" name="Box" item="pipe" />
-		<entry type="file" name="Simple" shader="ps" />
-		<entry type="file" name="Simple" shader="vs" />
+		<entry type="file" name="Simple" OGLShader="ps" />
+		<entry type="file" name="Simple" OGLShader="vs" />
 		<entry type="camera" fp="false">
 			<distance>4</distance>
 			<pitch>28</pitch>
