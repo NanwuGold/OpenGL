@@ -1,5 +1,5 @@
 #include "VertexArray.h"
-#include "OpenGLVertexArray.h"
+#include "Render/OpenGL/OpenGLVertexArray.h"
 #include "pointer_ptr.hpp"
 
 namespace FXAA

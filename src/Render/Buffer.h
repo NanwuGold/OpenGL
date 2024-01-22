@@ -53,11 +53,11 @@ namespace FXAA
 
     struct BufferElement
     {
-        std::string Name;
-        ShaderDataType Type{ShaderDataType::None};
-        uint32_t Size{};
-        uint32_t Offset{};
-        bool Normalized{};
+        std::string Name;                           ///< 数据的名称
+        ShaderDataType Type{ShaderDataType::None};  ///< 数据的类型
+        uint32_t Size{};    ///< 数据的大小
+        uint32_t Offset{};  ///< 偏移
+        bool Normalized{};  ///< 是否归一化
 
         BufferElement() = default;
 

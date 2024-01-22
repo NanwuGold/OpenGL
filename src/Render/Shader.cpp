@@ -58,18 +58,18 @@ Shader::Shader(const char* vertex_path, const char* fragment_path, const char* g
     const char* vertexShaderSource = vertexCode.c_str();
     const char* fragmentShaderSource = fragmentCode.c_str();
 
-    // compile  shader  -- 编译着色器
+    // compile  OGLShader  -- 编译着色器
     unsigned int vertex, fragment;
 
     vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vertexShaderSource, nullptr);
  glCompileShader(vertex);
-    checkCompileErrors(vertex, shader_type::vertex_shader);
+    checkCompileErrors(vertex, shaderType::vertexShader);
 
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fragmentShaderSource, nullptr);
     glCompileShader(fragment);
-    checkCompileErrors(fragment, shader_type::fragment_shader);
+    checkCompileErrors(fragment, shaderType::fragmentShader);
 
     unsigned int geometry;
     if (geometry_path != nullptr)
@@ -78,7 +78,7 @@ Shader::Shader(const char* vertex_path, const char* fragment_path, const char* g
         geometry = glCreateShader(GL_GEOMETRY_SHADER);
         glShaderSource(geometry, 1, &geometryShaderSource, nullptr);
         glCompileShader(geometry);
-        checkCompileErrors(geometry, shader_type::geometry_shader);
+        checkCompileErrors(geometry, shaderType::geometryShader);
     }
 
     // 着色器程序
@@ -92,7 +92,7 @@ Shader::Shader(const char* vertex_path, const char* fragment_path, const char* g
     }
 
     glLinkProgram(m_program);
-    checkCompileErrors(m_program, shader_type::program_shader);
+    checkCompileErrors(m_program, shaderType::programShader);
 
     glDeleteShader(vertex);
     glDeleteShader(fragment);
@@ -103,7 +103,7 @@ Shader::~Shader()
     glDeleteProgram(m_program);
 }
 
-void Shader::use() const
+[[maybe_unused]] void Shader::Bind() const
 {
     glUseProgram(m_program);
 }
@@ -114,37 +114,37 @@ void Shader::use() const
     glUniform1i(location, static_cast<int>(value));
 }
 
-void Shader::setInt(const std::string& name, const int value) const
+[[maybe_unused]] void Shader::setInt(const std::string& name, const int value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform1i(location, value);
 }
 
-void Shader::setFloat(const std::string& name, const float value) const
+[[maybe_unused]] void Shader::setFloat(const std::string& name, const float value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform1f(location, value);
 }
 
-void Shader::setVec2(const std::string& name, glm::vec2& value) const
+[[maybe_unused]] void Shader::setVec2(const std::string& name, glm::vec2& value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform2fv(location, 1, &value[0]);
 }
 
-void Shader::setVec2(const std::string& name, const float x, const float y) const
+[[maybe_unused]] void Shader::setVec2(const std::string& name, const float x, const float y) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform2f(location, x, y);
 }
 
-void Shader::setVec3(const std::string& name, glm::vec3 & value) const
+[[maybe_unused]] void Shader::setVec3(const std::string& name, glm::vec3 & value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform3fv(location, 1, &value[0]);
 }
 
-void Shader::setVec3(const std::string& name, const float x, const float y, const float z) const
+[[maybe_unused]] void Shader::setVec3(const std::string& name, const float x, const float y, const float z) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform3f(location, x, y, z);
@@ -180,24 +180,24 @@ void Shader::setMat4(const std::string& name, glm::mat4& value) const
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Shader::checkCompileErrors(const unsigned shader, const shader_type type)
+void Shader::checkCompileErrors(const unsigned shader, const shaderType type)
 {
     int success{1};
     char infoLog[1024];
     switch (type)
     {
-    case shader_type::vertex_shader:
-    case shader_type::fragment_shader:
-    case shader_type::geometry_shader:
+    case shaderType::vertexShader:
+    case shaderType::fragmentShader:
+    case shaderType::geometryShader:
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success)
         {
             glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-            std::cout << "ERROR::SHADER::COMPILATION_FAILED of type: " << (type == shader_type::vertex_shader ? "VERTEX" : (type == shader_type::fragment_shader ? "FRAGMENT" : "GEOMETRY"))
+            std::cout << "ERROR::SHADER::COMPILATION_FAILED of type: " << (type == shaderType::vertexShader ? "VERTEX" : (type == shaderType::fragmentShader ? "FRAGMENT" : "GEOMETRY"))
                       << "\n" << infoLog << std::endl;
         }
         break;
-    case shader_type::program_shader:
+    case shaderType::programShader:
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success)
         {

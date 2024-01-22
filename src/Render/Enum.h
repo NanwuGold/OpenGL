@@ -8,16 +8,14 @@
 #ifndef RENDERENUM_H
 #define RENDERENUM_H
 
-    namespace shader
+namespace OGLShader
+{
+    enum class shaderType
     {
-        enum class shader_type
-        {
-            vertex_shader,
-            fragment_shader,
-            geometry_shader,
-            program_shader
-
-        };
-    }
-
-#endif //! RENDEREN_ENUM_H
+        vertexShader,
+        fragmentShader,
+        geometryShader,
+        programShader
+    };
+}
+#endif //RENDERENUM_H

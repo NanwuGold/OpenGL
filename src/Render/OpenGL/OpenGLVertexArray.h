@@ -2,7 +2,7 @@
 #define HAZEL_OPENGLVERTEXARRAY_H_
 
 #include "OpenGLVertexArray.h"
-#include "VertexArray.h"
+#include "Render/VertexArray.h"
 
 namespace FXAA
 {

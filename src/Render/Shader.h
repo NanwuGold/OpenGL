@@ -6,7 +6,7 @@
 #include "Enum.h"
 #include <typeinfo>
 
-using namespace shader;
+using namespace OGLShader;
 
 class Shader
 {
@@ -14,38 +14,34 @@ public:
     unsigned int m_program;
     Shader(const char* vertex_path, const char* fragment_path,const char * geometry_path = nullptr);
     ~Shader();
-    void use() const;
+    [[maybe_unused]] void Bind() const;
 
     [[maybe_unused]] void setBool(const std::string& name, bool value) const;
-    void setInt(const std::string& name,  int value ) const;
-    void setFloat(const std::string& name,  float value ) const;
-    void setVec2(const std::string& name, glm::vec2 & value) const;
-    void setVec2(const std::string& name,float x, float y) const;
 
-    void setVec3(const std::string& name, glm::vec3& value) const;
-    void setVec3(const std::string& name, float x, float y,float z) const;
+    [[maybe_unused]] void setInt(const std::string& name,  int value ) const;
+
+    [[maybe_unused]] void setFloat(const std::string& name,  float value ) const;
+
+    [[maybe_unused]] void setVec2(const std::string& name, glm::vec2 & value) const;
+
+    [[maybe_unused]] void setVec2(const std::string& name,float x, float y) const;
+
+    [[maybe_unused]] void setVec3(const std::string& name, glm::vec3& value) const;
+
+    [[maybe_unused]] void setVec3(const std::string& name, float x, float y,float z) const;
 
     [[maybe_unused]] void setVec4(const std::string& name, glm::vec4& value) const;
 
     [[maybe_unused]] void setVec4(const std::string& name, float x, float y,float z,float w) const;
 
-    [[maybe_unused]] void setMat2(const std::string& name, [[maybe_unused]] glm::mat2& value) const;
+    [[maybe_unused]] void setMat2(const std::string& name, glm::mat2& value) const;
 
     [[maybe_unused]] void setMat3(const std::string& name, glm::mat3& value) const;
-    void setMat4(const std::string& name, glm::mat4& value) const;
 
-    template<typename T1 = std::string, typename  T2>
-    [[maybe_unused]] void setUniformValue(T1 & name,T2 & value)
-    {
-        [[maybe_unused]] const auto location = glGetUniformLocation(m_program, name.c_str());
-        if constexpr (typeid(value).name() == typeid(glm::mat4).name())
-        {
-            // TODO
-        }
-    }
+    [[maybe_unused]]  void setMat4(const std::string& name, glm::mat4& value) const;
 
 private:
-    static void checkCompileErrors(unsigned int shader, shader_type type);
+    static void checkCompileErrors(unsigned int shader, shaderType type);
 
 };
 

@@ -1,5 +1,5 @@
 #include "OpenGLVertexArray.h"
-#include "Buffer.h"
+#include "Render/Buffer.h"
 #include <glad/glad.h>
 
 namespace FXAA
