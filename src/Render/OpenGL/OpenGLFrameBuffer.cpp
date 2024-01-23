@@ -41,6 +41,7 @@ void OpenGLFrameBuffer::Invalidate()
     std::vector<GLenum> drawBuffers;
     for(const auto& texture: m_colorAttachments)
     {
+#if  0
         unsigned int textureI;
         glGenTextures(1,&textureI);
 
@@ -55,25 +56,28 @@ void OpenGLFrameBuffer::Invalidate()
         drawBuffers.emplace_back(GL_COLOR_ATTACHMENT0 + index);
         glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers.back(), GL_TEXTURE_2D, textureI, 0);
         index++;
+#endif
 
-//        drawBuffers.emplace_back(GL_COLOR_ATTACHMENT0 + index);
-//        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers.back(), GL_TEXTURE_2D, texture->RenderID(), 0);
-//        index++;
+        drawBuffers.emplace_back(GL_COLOR_ATTACHMENT0 + index);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers.back(), GL_TEXTURE_2D, texture->RenderID(), 0);
+        index++;
     }
 
+#if  0
     unsigned int textureI;
     glGenTextures(1,&textureI);
     glBindTexture(GL_TEXTURE_2D,textureI);
     glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, 800, 600);
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 800, 600, 0, GL_RGBA, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER,GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, textureI, 0);
+#endif
 
-    // glDrawBuffers(drawBuffers.size(),drawBuffers.data());
+    glFramebufferTexture2D(GL_FRAMEBUFFER,GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depthAttachment->RenderID(), 0);
+
+    glDrawBuffers(drawBuffers.size(),drawBuffers.data());
 }
 
 void OpenGLFrameBuffer::UnBind()

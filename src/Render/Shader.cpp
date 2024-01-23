@@ -126,7 +126,7 @@ Shader::~Shader()
     glUniform1f(location, value);
 }
 
-[[maybe_unused]] void Shader::setVec2(const std::string& name, glm::vec2& value) const
+[[maybe_unused]] void Shader::setVec2(const std::string& name, const glm::vec2 &value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform2fv(location, 1, &value[0]);
