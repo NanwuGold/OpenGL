@@ -50,34 +50,71 @@ int main()
     glViewport(0, 0, 800, 600);
 
     auto cube_shader = std::make_shared<Shader>("./Shaders/FXAA_VS_drawCube.glsl","./Shaders/FXAA_FS_drawCube.glsl");
+    auto quad_shader = std::make_shared<Shader>("./Shaders/FXAA_VS_quad.glsl","./Shaders/FXAA_FS_quad.glsl");
 
-    auto m_VertexArray = FXAA::VertexArray::Create();
-
-    float vertices[3 * 7] =
+    auto m_CubeVertexArray = FXAA::VertexArray::Create();
     {
-            -.5f, -.5f, .0f, 0.8f, 0.2f, 0.8f, 1.0f,
-            .5f, -.5f, .0f, 0.2f, 0.4f, 0.8f, 1.0f,
-            .0f, +.5f, .0f, 0.8f, 0.8f, 0.2f, 1.0f
-    };
+        float vertices[3 * 3] =
+                {
+//                        -.5f, -.5f, .0f,  //0.8f, 0.2f, 0.8f, 1.0f,
+//                        .5f, -.5f, .0f, //0.2f, 0.4f, 0.8f, 1.0f,
+//                        .0f, +.5f, .0f, // 0.8f, 0.8f, 0.2f, 1.0f
 
-    auto m_VertexBuffer = (FXAA::VertexBuffer::Create(vertices, sizeof(vertices)));
+                0.5,0.0,0.0,
+                -0.5,0.5,0.0,
+                0.,-0.5,0.0
+                };
 
-    m_VertexBuffer->Bind();
-    {
-        FXAA::BufferLayout layout = {
-                {FXAA::ShaderDataType::Float3, "a_Position"},
-                {FXAA::ShaderDataType::Float4, "a_Color"}
-        };
-        m_VertexBuffer->SetLayout(layout);
+        auto m_VertexBuffer = (FXAA::VertexBuffer::Create(vertices, sizeof(vertices)));
+
+        m_VertexBuffer->Bind();
+        {
+            FXAA::BufferLayout layout = {
+                    {FXAA::ShaderDataType::Float3, "a_Position"},
+                    // {FXAA::ShaderDataType::Float4, "a_Color"}
+            };
+            m_VertexBuffer->SetLayout(layout);
+        }
+
+        m_CubeVertexArray->AddVertexBuffer(m_VertexBuffer);
+
+        uint32_t indices[3] = {0, 1, 2};
+        auto m_IndexBuffer = (FXAA::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+        m_IndexBuffer->Bind();
+
+        m_CubeVertexArray->SetIndexBuffer(m_IndexBuffer);
     }
 
-    m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+    auto m_QuadVertexArray = FXAA::VertexArray::Create();
+    {
+        float vertices[4 * 5] =
+        {
+            -1.0,-1.0,0.0,0.0,0.0,  ///< 左下
+            1.0,-1.0,0.0,1.0,0.0,   ///< 右下
+            1.0,1.0,0.0,1.0,1.0,  ///< 右上
+            -1.0,1.0,0.0,0.0,1.0  ///< 左上
+        };
 
-    uint32_t indices[3] = {0, 1, 2};
-    auto m_IndexBuffer = (FXAA::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-    m_IndexBuffer->Bind();
+        auto m_VertexBuffer = (FXAA::VertexBuffer::Create(vertices, sizeof(vertices)));
 
-    m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+        m_VertexBuffer->Bind();
+        {
+            FXAA::BufferLayout layout = {
+                    {FXAA::ShaderDataType::Float3, "a_Position"},
+                    {FXAA::ShaderDataType::Float2, "a_TexCoord"}
+            };
+            m_VertexBuffer->SetLayout(layout);
+        }
+
+        m_QuadVertexArray->AddVertexBuffer(m_VertexBuffer);
+
+        uint32_t indices[6] = {0, 1, 2,0,2,3};
+        auto m_IndexBuffer = (FXAA::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+        m_IndexBuffer->Bind();
+
+        m_QuadVertexArray->SetIndexBuffer(m_IndexBuffer);
+    }
+
 
     auto color = Texture::Create(800,600,GL_RGBA32F); color->Create();
     auto depth = Texture::Create(800,600,GL_DEPTH24_STENCIL8); depth->Create();
@@ -99,9 +136,9 @@ int main()
 
 
             cube_shader->Bind();
-            m_VertexArray->Bind();
+            m_CubeVertexArray->Bind();
 
-            const auto count = m_VertexArray->GetIndexBuffer()->GetCount();
+            const auto count = m_CubeVertexArray->GetIndexBuffer()->GetCount();
             glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(count), GL_UNSIGNED_INT, nullptr);
         }
 
@@ -110,11 +147,17 @@ int main()
             glClearColor(37.0 / 255.0, 37.0 / 255.0, 38.0 / 255.0, 1.0);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            cube_shader->Bind();
-            m_VertexArray->Bind();
+            quad_shader->Bind();
+            quad_shader->setInt("lightTexture",0);
+            quad_shader->setVec2("Size",glm::vec2(800,600));
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D,color->RenderID());
+            m_QuadVertexArray->Bind();
 
-            const auto count = m_VertexArray->GetIndexBuffer()->GetCount();
-            glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(count), GL_UNSIGNED_INT, nullptr);
+            {
+                const auto count = m_QuadVertexArray->GetIndexBuffer()->GetCount();
+                glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(count),GL_UNSIGNED_INT,nullptr);
+            }
         }
     }
 
