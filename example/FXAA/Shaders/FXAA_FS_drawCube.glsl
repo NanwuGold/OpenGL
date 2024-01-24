@@ -5,16 +5,16 @@ in vec4 inputColor;
 
 void main()
 {
-    FragColor = vec4(0.0,1.0,0.0,1.0);
-    FragColor = vec4(0.0,1.0,1.0,1.0);
+    FragColor = inputColor;
 
     /// 亮度计算
-    float L = 0.213 * FragColor.r + 0.715 * FragColor.g + 0.072 * FragColor.b;
+    // vec3 light = vec3(0.299, 0.587, 0.114);
+//    float L = sqrt(dot(FragColor.rgb,light));
 
     /// 转为灰度图
-//    float grayscale = 0.2126 * inputColor.r + 0.7152 * inputColor.g + 0.0722 * inputColor.b;
-//    FragColor.r = grayscale;
-//    FragColor.g = grayscale;
-//    FragColor.b = grayscale;
-    FragColor.a = L;
+    //    float grayscale = 0.2126 * inputColor.r + 0.7152 * inputColor.g + 0.0722 * inputColor.b;
+    //    FragColor.r = grayscale;
+    //    FragColor.g = grayscale;
+    //    FragColor.b = grayscale;
+    FragColor.a = 1.0f;
 }

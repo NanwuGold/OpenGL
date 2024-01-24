@@ -54,15 +54,15 @@ int main()
 
     auto m_CubeVertexArray = FXAA::VertexArray::Create();
     {
-        float vertices[3 * 3] =
+        float vertices[3 * 7] =
                 {
-//                        -.5f, -.5f, .0f,  //0.8f, 0.2f, 0.8f, 1.0f,
-//                        .5f, -.5f, .0f, //0.2f, 0.4f, 0.8f, 1.0f,
-//                        .0f, +.5f, .0f, // 0.8f, 0.8f, 0.2f, 1.0f
+                        -.5f, -.5f, .0f, 0.8f, 0.2f, 0.8f, 1.0f,
+                        .5f, -.5f, .0f, 0.2f, 0.4f, 0.8f, 1.0f,
+                        .0f, +.5f, .0f, 0.8f, 0.8f, 0.2f, 1.0f
 
-                0.5,0.0,0.0,
-                -0.5,0.5,0.0,
-                0.,-0.5,0.0
+//                0.5,0.0,0.0,
+//                -0.5,0.5,0.0,
+//                0.,-0.5,0.0
                 };
 
         auto m_VertexBuffer = (FXAA::VertexBuffer::Create(vertices, sizeof(vertices)));
@@ -71,7 +71,7 @@ int main()
         {
             FXAA::BufferLayout layout = {
                     {FXAA::ShaderDataType::Float3, "a_Position"},
-                    // {FXAA::ShaderDataType::Float4, "a_Color"}
+                     {FXAA::ShaderDataType::Float4, "a_Color"}
             };
             m_VertexBuffer->SetLayout(layout);
         }
