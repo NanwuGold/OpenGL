@@ -2,9 +2,9 @@
 #define HAZEL_OPENGLVERTEXARRAY_H_
 
 #include "OpenGLVertexArray.h"
-#include "Render/VertexArray.h"
+#include "RenderBase/Render/VertexArray.h"
 
-namespace FXAA
+namespace OBase
 {
     class OpenGLVertexArray : public VertexArray
     {

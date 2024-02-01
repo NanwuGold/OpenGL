@@ -6,9 +6,9 @@
 #include <string>
 #include <vector>
 
-#include "pointer_ptr.hpp"
+#include "RenderBase/pointer_ptr.hpp"
 
-namespace FXAA
+namespace OBase
 {
     enum class ShaderDataType : int
     {

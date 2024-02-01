@@ -1,4 +1,4 @@
-#include "Shader.h"
+#include "OpenGLShader.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -6,7 +6,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-Shader::Shader(const char* vertex_path, const char* fragment_path, const char* geometry_path)
+OpenGLShader::OpenGLShader(const char* vertex_path, const char* fragment_path, const char* geometry_path)
 {
     // 读取 着色器的源码文件
     std::string vertexCode;
@@ -98,89 +98,89 @@ Shader::Shader(const char* vertex_path, const char* fragment_path, const char* g
     glDeleteShader(fragment);
 }
 
-Shader::~Shader()
+OpenGLShader::~OpenGLShader()
 {
     glDeleteProgram(m_program);
 }
 
-[[maybe_unused]] void Shader::Bind() const
+[[maybe_unused]] void OpenGLShader::Bind() const
 {
     glUseProgram(m_program);
 }
 
-[[maybe_unused]] void Shader::setBool(const std::string& name, const bool value) const
+[[maybe_unused]] void OpenGLShader::setBool(const std::string& name, const bool value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform1i(location, static_cast<int>(value));
 }
 
-[[maybe_unused]] void Shader::setInt(const std::string& name, const int value) const
+[[maybe_unused]] void OpenGLShader::setInt(const std::string& name, const int value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform1i(location, value);
 }
 
-[[maybe_unused]] void Shader::setFloat(const std::string& name, const float value) const
+[[maybe_unused]] void OpenGLShader::setFloat(const std::string& name, const float value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform1f(location, value);
 }
 
-[[maybe_unused]] void Shader::setVec2(const std::string& name, const glm::vec2 &value) const
+[[maybe_unused]] void OpenGLShader::setVec2(const std::string& name, const glm::vec2 &value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform2fv(location, 1, &value[0]);
 }
 
-[[maybe_unused]] void Shader::setVec2(const std::string& name, const float x, const float y) const
+[[maybe_unused]] void OpenGLShader::setVec2(const std::string& name, const float x, const float y) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform2f(location, x, y);
 }
 
-[[maybe_unused]] void Shader::setVec3(const std::string& name, glm::vec3 & value) const
+[[maybe_unused]] void OpenGLShader::setVec3(const std::string& name, glm::vec3 & value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform3fv(location, 1, &value[0]);
 }
 
-[[maybe_unused]] void Shader::setVec3(const std::string& name, const float x, const float y, const float z) const
+[[maybe_unused]] void OpenGLShader::setVec3(const std::string& name, const float x, const float y, const float z) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform3f(location, x, y, z);
 }
 
-[[maybe_unused]] void Shader::setVec4(const std::string& name, glm::vec4& value) const
+[[maybe_unused]] void OpenGLShader::setVec4(const std::string& name, glm::vec4& value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform4fv(location, 1, &value[0]);
 }
 
-[[maybe_unused]] void Shader::setVec4(const std::string& name, const float x, const float y, const float z, const float w) const
+[[maybe_unused]] void OpenGLShader::setVec4(const std::string& name, const float x, const float y, const float z, const float w) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform4f(location, x, y, z, w);
 }
 
-[[maybe_unused]] void Shader::setMat2(const std::string& name, glm::mat2& value) const
+[[maybe_unused]] void OpenGLShader::setMat2(const std::string& name, glm::mat2& value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniformMatrix2fv(location, 1, GL_FALSE, &value[0][0]);
 }
 
-[[maybe_unused]] void Shader::setMat3(const std::string& name, glm::mat3& value) const
+[[maybe_unused]] void OpenGLShader::setMat3(const std::string& name, glm::mat3& value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Shader::setMat4(const std::string& name, glm::mat4& value) const
+void OpenGLShader::setMat4(const std::string& name, glm::mat4& value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Shader::checkCompileErrors(const unsigned shader, const shaderType type)
+void OpenGLShader::checkCompileErrors(const unsigned shader, const shaderType type)
 {
     int success{1};
     char infoLog[1024];

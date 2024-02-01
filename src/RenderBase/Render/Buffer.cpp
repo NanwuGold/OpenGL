@@ -1,6 +1,6 @@
 #include "Buffer.h"
-#include "Render/OpenGL/OpenGLBuffer.h"
-namespace FXAA
+#include "RenderBase/OpenGL/OpenGLBuffer.h"
+namespace OBase
 {
     Ref<VertexBuffer> VertexBuffer::Create(float *vertices, uint32_t size)
     {

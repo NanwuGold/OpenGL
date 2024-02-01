@@ -1,2 +1,7 @@
-# OpenGL_FXAA
-a case of FXAA
+# Some Case
+- Use OpenGL 4.5
+
+- [ ] Depth Peeling(todo)
+- [x] OBase
+- [ ] SSAO
+

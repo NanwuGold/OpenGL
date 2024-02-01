@@ -3,9 +3,9 @@
 
 #include <memory>
 #include <vector>
-#include "pointer_ptr.hpp"
+#include "RenderBase/pointer_ptr.hpp"
 
-namespace FXAA
+namespace OBase
 {
 
     class VertexBuffer;
@@ -13,7 +13,7 @@ namespace FXAA
     class IndexBuffer;
 }
 
-namespace FXAA
+namespace OBase
 {
     class VertexArray
     {

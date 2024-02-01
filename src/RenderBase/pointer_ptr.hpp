@@ -3,9 +3,8 @@
 
 #include <memory>
 
-namespace FXAA
+namespace OBase
 {
-
     template<typename T>
     using Scope = std::unique_ptr<T>;
 

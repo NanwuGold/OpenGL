@@ -1,8 +1,8 @@
 #include "VertexArray.h"
-#include "Render/OpenGL/OpenGLVertexArray.h"
-#include "pointer_ptr.hpp"
+#include "RenderBase/OpenGL/OpenGLVertexArray.h"
+#include "RenderBase/pointer_ptr.hpp"
 
-namespace FXAA
+namespace OBase
 {
     Ref<VertexArray> VertexArray::Create()
     {

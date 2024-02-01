@@ -23,12 +23,13 @@ void OpenGLTexture::resize(int w, int h)
 
 void OpenGLTexture::Invalidate()
 {
-    if(m_TextureID)
+    if(m_TextureID != 0)
     {
         glDeleteTextures(1, &m_TextureID);
     }
     glCreateTextures(GL_TEXTURE_2D,1,&m_TextureID);
     glBindTexture(GL_TEXTURE_2D, m_TextureID);
+
     glTextureStorage2D(m_TextureID, 1 , m_format, static_cast<GLsizei>(m_Width), static_cast<GLsizei>(m_Height));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -45,6 +46,11 @@ unsigned int OpenGLTexture::RenderID()
 void OpenGLTexture::Create()
 {
     Invalidate();
+}
+
+GLenum OpenGLTexture::format()
+{
+    return m_format;
 }
 
 

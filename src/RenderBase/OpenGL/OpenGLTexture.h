@@ -1,7 +1,7 @@
 #ifndef OPENGL_FXAA_OPENGLTEXTURE_H
 #define OPENGL_FXAA_OPENGLTEXTURE_H
 
-#include "Render/Texture.h"
+#include "RenderBase/Render/Texture.h"
 
 class OpenGLTexture : public Texture
 {
@@ -17,6 +17,8 @@ public:
     unsigned int RenderID() override;
 
     void Create() override;
+
+    GLenum format() override;
 
 private:
     unsigned int m_TextureID;

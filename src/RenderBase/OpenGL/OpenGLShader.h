@@ -3,17 +3,17 @@
 
 #include <string>
 #include <glm/glm.hpp>
-#include "Enum.h"
+#include "RenderBase/Render/Enum.h"
 #include <typeinfo>
 
 using namespace OGLShader;
 
-class Shader
+class OpenGLShader
 {
 public:
     unsigned int m_program;
-    Shader(const char* vertex_path, const char* fragment_path,const char * geometry_path = nullptr);
-    ~Shader();
+    OpenGLShader(const char* vertex_path, const char* fragment_path, const char * geometry_path = nullptr);
+    ~OpenGLShader();
     [[maybe_unused]] void Bind() const;
 
     [[maybe_unused]] void setBool(const std::string& name, bool value) const;

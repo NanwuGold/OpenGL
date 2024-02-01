@@ -1,8 +1,8 @@
 #include "OpenGLVertexArray.h"
-#include "Render/Buffer.h"
+#include "RenderBase/Render/Buffer.h"
 #include <glad/glad.h>
 
-namespace FXAA
+namespace OBase
 {
     static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
     {
