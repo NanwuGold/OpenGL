@@ -3,7 +3,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace FXAA
+namespace OBase
 {
     class processInput
     {

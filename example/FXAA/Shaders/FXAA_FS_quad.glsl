@@ -12,7 +12,7 @@ float EDGE_THRESHOLD_MAX = 0.125;
 #define ITERATIONS 12
 #define SUBPIXEL_QUALITY 1.75
 
-// #define SAMPLE_FXAA
+#define SAMPLE_FXAA
 
 float rgb2luma(vec3 rgb)
 {

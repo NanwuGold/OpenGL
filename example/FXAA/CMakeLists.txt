@@ -1,4 +1,4 @@
-SET(target OpenGL_FXAA)
+SET(target FXAA)
 
 FIND_PACKAGE(glfw3 CONFIG REQUIRED)
 FIND_PACKAGE(glad CONFIG REQUIRED)
@@ -9,6 +9,5 @@ add_executable(${target} main.cpp)
 
 target_link_libraries(${target} PRIVATE glfw glad::glad OpenGLBase)
 target_include_directories(${target} PRIVATE ${CMAKE_SOURCE_DIR}/src)
-
 
 FILE(INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/Shaders DESTINATION ${CMAKE_BINARY_DIR}/bin)
