@@ -1,7 +1,8 @@
 #ifndef HAZEL_OPENGLBUFFER_H
 #define HAZEL_OPENGLBUFFER_H
 
-#include "RenderBase//Render/Buffer.h"
+#include "RenderBase/Render/Buffer.h"
+
 namespace OBase
 {
     class OpenGLVertexBuffer : public VertexBuffer

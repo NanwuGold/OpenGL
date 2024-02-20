@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.23)
-project(OpenGL_FXAA)
+project(OpenGL)
 
 set(CMAKE_CXX_STANDARD 17)
 

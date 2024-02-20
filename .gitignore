@@ -34,3 +34,5 @@
 # directory
 .idea/
 
+.vs
+out

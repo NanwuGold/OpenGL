@@ -1,5 +1,5 @@
-#ifndef OPENGL_FXAA_TEXTURE_H
-#define OPENGL_FXAA_TEXTURE_H
+#ifndef OPENGL_RENDERBASE_TEXTURE_H
+#define OPENGL_RENDERBASE_TEXTURE_H
 
 #include "RenderBase/pointer_ptr.hpp"
 #include <glad/glad.h>
@@ -7,6 +7,9 @@
 class Texture
 {
 public:
+    Texture() = default;
+    virtual ~Texture() = default;
+
     virtual void Bind() = 0;
     virtual void resize(int w,int h) = 0;
     virtual void Create() = 0;
@@ -19,4 +22,4 @@ public:
 };
 
 
-#endif //OPENGL_FXAA_TEXTURE_H
+#endif //OPENGL_RENDERBASE_TEXTURE_H

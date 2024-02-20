@@ -1,5 +1,5 @@
-#ifndef OPENGL_FXAA_FRAMEBUFFER_H
-#define OPENGL_FXAA_FRAMEBUFFER_H
+#ifndef OPENGL_RENDERBASE_FRAMEBUFFER_H
+#define OPENGL_RENDERBASE_FRAMEBUFFER_H
 
 #include <vector>
 #include "RenderBase/pointer_ptr.hpp"
@@ -17,4 +17,4 @@ public:
 };
 
 
-#endif //OPENGL_FXAA_FRAMEBUFFER_H
+#endif //OPENGL_RENDERBASE_FRAMEBUFFER_H
