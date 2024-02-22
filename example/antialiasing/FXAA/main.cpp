@@ -66,7 +66,7 @@ int main()
 
     glfwMakeContextCurrent(window);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
@@ -82,10 +82,10 @@ int main()
 
     glViewport(0, 0, FXAA::Window::width(), FXAA::Window::height());
 
-    auto cube_shader = std::make_shared<OpenGLShader>("./Shaders/FXAA_VS_drawCube.glsl", "./Shaders/FXAA_FS_drawCube.glsl");
-    auto quad_shader = std::make_shared<OpenGLShader>("./Shaders/FXAA_VS_quad.glsl", "./Shaders/FXAA_FS_quad.glsl");
+    const auto cubeShader = std::make_shared<OpenGLShader>("./Shaders/FXAA_VS_drawCube.glsl", "./Shaders/FXAA_FS_drawCube.glsl");
+    const auto quadShader = std::make_shared<OpenGLShader>("./Shaders/FXAA_VS_quad.glsl", "./Shaders/FXAA_FS_quad.glsl");
 
-    auto m_CubeVertexArray = OBase::VertexArray::Create();
+    const auto cubeVertexArray = OBase::VertexArray::Create();
     {
         float vertices[3 * 7] =
         {
@@ -94,27 +94,27 @@ int main()
             .0f, +.5f, .0f, 0.8f, 0.8f, 0.2f, 1.0f
         };
 
-        auto m_VertexBuffer = (OBase::VertexBuffer::Create(vertices, sizeof(vertices)));
+        const auto vertexBuffer = (OBase::VertexBuffer::Create(vertices, sizeof(vertices)));
 
-        m_VertexBuffer->Bind();
+        vertexBuffer->Bind();
         {
             OBase::BufferLayout layout = {
                     { OBase::ShaderDataType::Float3, "a_Position"},
                      {OBase::ShaderDataType::Float4, "a_Color"}
             };
-            m_VertexBuffer->SetLayout(layout);
+            vertexBuffer->SetLayout(layout);
         }
 
-        m_CubeVertexArray->AddVertexBuffer(m_VertexBuffer);
+        cubeVertexArray->AddVertexBuffer(vertexBuffer);
 
         uint32_t indices[3] = {0, 1, 2};
-        auto m_IndexBuffer = (OBase::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-        m_IndexBuffer->Bind();
+        const auto indexBuffer = (OBase::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+        indexBuffer->Bind();
 
-        m_CubeVertexArray->SetIndexBuffer(m_IndexBuffer);
+        cubeVertexArray->SetIndexBuffer(indexBuffer);
     }
 
-    auto m_QuadVertexArray = OBase::VertexArray::Create();
+    const auto quadVertexArray = OBase::VertexArray::Create();
     {
         float vertices[4 * 5] =
         {
@@ -124,30 +124,30 @@ int main()
             -1.0,1.0,0.0,0.0,1.0  ///< 左上
         };
 
-        auto m_VertexBuffer = (OBase::VertexBuffer::Create(vertices, sizeof(vertices)));
+        const auto vertexBuffer = (OBase::VertexBuffer::Create(vertices, sizeof(vertices)));
 
-        m_VertexBuffer->Bind();
+        vertexBuffer->Bind();
         {
-            OBase::BufferLayout layout = {
+            const OBase::BufferLayout layout = {
                     {OBase::ShaderDataType::Float3, "a_Position"},
                     {OBase::ShaderDataType::Float2, "a_TexCoord"}
             };
-            m_VertexBuffer->SetLayout(layout);
+            vertexBuffer->SetLayout(layout);
         }
 
-        m_QuadVertexArray->AddVertexBuffer(m_VertexBuffer);
+        quadVertexArray->AddVertexBuffer(vertexBuffer);
 
         uint32_t indices[6] = {0, 1, 2,0,2,3};
-        auto m_IndexBuffer = (OBase::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-        m_IndexBuffer->Bind();
+        const auto indexBuffer = (OBase::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+        indexBuffer->Bind();
 
-        m_QuadVertexArray->SetIndexBuffer(m_IndexBuffer);
+        quadVertexArray->SetIndexBuffer(indexBuffer);
     }
 
     auto color = Texture::Create(FXAA::Window::width(), FXAA::Window::height(),GL_RGBA32F); color->Create();
-    auto depth = Texture::Create(FXAA::Window::width(), FXAA::Window::height(),GL_DEPTH24_STENCIL8); depth->Create();
+    const auto depth = Texture::Create(FXAA::Window::width(), FXAA::Window::height(),GL_DEPTH24_STENCIL8); depth->Create();
 
-    auto fbo = FrameBuffer::Create();
+    const auto fbo = FrameBuffer::Create();
     fbo->Create({color},depth);
 
     while(!glfwWindowShouldClose(window))
@@ -163,10 +163,10 @@ int main()
             glClear(GL_COLOR_BUFFER_BIT);
 
 
-            cube_shader->Bind();
-            m_CubeVertexArray->Bind();
+            cubeShader->Bind();
+            cubeVertexArray->Bind();
 
-            const auto count = m_CubeVertexArray->GetIndexBuffer()->GetCount();
+            const auto count = cubeVertexArray->GetIndexBuffer()->GetCount();
             glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(count), GL_UNSIGNED_INT, nullptr);
         }
 
@@ -175,15 +175,15 @@ int main()
             glClearColor(37.0 / 255.0, 37.0 / 255.0, 38.0 / 255.0, 1.0);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            quad_shader->Bind();
-            quad_shader->setInt("lightTexture",0);
-            quad_shader->setVec2("Size",glm::vec2(800,600));
+            quadShader->Bind();
+            quadShader->setInt("lightTexture",0);
+            quadShader->setVec2("Size",glm::vec2(800,600));
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D,color->RenderID());
-            m_QuadVertexArray->Bind();
+            quadVertexArray->Bind();
 
             {
-                const auto count = m_QuadVertexArray->GetIndexBuffer()->GetCount();
+                const auto count = quadVertexArray->GetIndexBuffer()->GetCount();
                 glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(count),GL_UNSIGNED_INT,nullptr);
             }
         }
