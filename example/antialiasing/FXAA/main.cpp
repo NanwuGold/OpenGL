@@ -1,7 +1,5 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include "RenderBase/OpenGL/OpenGLShader.h"
+#include "RenderBase/OpenGL/OpenGLContext.h"
 #include "RenderBase/Render/VertexArray.h"
 #include "RenderBase/Render/Buffer.h"
 #include "RenderBase/Render/Texture.h"
@@ -9,6 +7,8 @@
 
 #include <iostream>
 #include "processInput.h"
+
+#include "RenderBase/pointer_ptr.hpp"
 
 struct WindowData
 {
@@ -52,10 +52,13 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
     glfwWindowHint(GLFW_RESIZABLE,GLFW_FALSE);   ///< 关闭resize
 
-    GLFWwindow* window = glfwCreateWindow(FXAA::Window::width(), FXAA::Window::height(), FXAA::Window::title().c_str(), nullptr, nullptr);
+
+    std::shared_ptr<GLFWwindow> window (glfwCreateWindow(FXAA::Window::width(), FXAA::Window::height(), FXAA::Window::title().c_str(), nullptr, nullptr),[](GLFWwindow *window){
+        window = nullptr;
+    });
+
 
     if (window == nullptr)
     {
@@ -64,16 +67,11 @@ int main()
         return -1;
     }
 
-    glfwMakeContextCurrent(window);
-
-    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
+    auto context = OBase::CreateRef<OBase::OpenGLContext>(window);
+    context->Init();
 
     /// resize event
-    glfwSetFramebufferSizeCallback(window,[](GLFWwindow * window,int width,int height)
+    glfwSetFramebufferSizeCallback(window.get(),[](GLFWwindow * window,int width,int height)
     {
         ///TODO: maybe
     });
@@ -150,11 +148,11 @@ int main()
     const auto fbo = FrameBuffer::Create();
     fbo->Create({color},depth);
 
-    while(!glfwWindowShouldClose(window))
+    while(!glfwWindowShouldClose(window.get()))
     {
-        OBase::processor(window);
+        OBase::processor(window.get());
 
-        glfwSwapBuffers(window);
+        context->SwapBuffers();
         glfwPollEvents();
         {
             fbo->Bind();
