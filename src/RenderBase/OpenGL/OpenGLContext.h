@@ -1,22 +1,26 @@
 #ifndef  OPENGL_RENDERBASE_OPENGLCONTEXT_H
 #define  OPENGL_RENDERBASE_OPENGLCONTEXT_H
 
+#include <memory>
 #include "RenderBase/Render/Context.h"
-#include <GLFW/glfw3.h>
+
+
+class GLFWwindow;
 
 namespace OBase
 {
 	class OpenGLContext : public Context
 	{
 	public:
-		OpenGLContext(GLFWwindow * window);
+		explicit OpenGLContext(std::shared_ptr<GLFWwindow> window);
+        ~OpenGLContext();
 
         void Init() override;
 
         void SwapBuffers() override;
 
     private:
-        GLFWwindow * m_Window;
+        std::shared_ptr<GLFWwindow> m_Window;
 
     };
 }
