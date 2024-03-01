@@ -14,7 +14,7 @@
 
 #define OBASE_INFO(x) \
 {                     \
-    std::cout<< x<< std::endl;  \
+    std::cout<< x << std::endl;  \
 }
 
 #endif

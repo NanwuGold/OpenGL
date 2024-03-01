@@ -9,11 +9,11 @@ class GLFWwindow;
 
 namespace OBase
 {
-	class OpenGLContext : public Context
-	{
-	public:
-		explicit OpenGLContext(std::shared_ptr<GLFWwindow> window);
-        ~OpenGLContext();
+    class OpenGLContext : public Context
+    {
+    public:
+        explicit OpenGLContext(std::shared_ptr<GLFWwindow> window);
+        ~OpenGLContext() override;
 
         void Init() override;
 

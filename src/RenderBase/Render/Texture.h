@@ -7,7 +7,15 @@
 class Texture
 {
 public:
+
     Texture() = default;
+
+    Texture(Texture&&) = delete;
+    Texture(Texture&) = delete;
+
+    Texture& operator=(Texture&&) = delete;
+    Texture& operator=(Texture&) = delete;
+
     virtual ~Texture() = default;
 
     virtual void Bind() = 0;
@@ -18,7 +26,9 @@ public:
     virtual GLenum format() = 0;
     virtual unsigned int RenderID() = 0;
 
-    static OBase::Ref<Texture> Create(int w, int h, GLenum format);
+    virtual bool multiSampleFlag() = 0;
+
+    static OBase::Ref<Texture> Create(int w, int h, GLenum format, bool multiSampleFlag = false);
 };
 
 

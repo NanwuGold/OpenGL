@@ -38,10 +38,17 @@ void OpenGLFrameBuffer::Invalidate()
 
     auto index = 0;
     std::vector<GLenum> drawBuffers;
+    auto target = GL_TEXTURE_2D;
     for(const auto& texture: m_colorAttachments)
     {
         drawBuffers.emplace_back(GL_COLOR_ATTACHMENT0 + index);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers.back(), GL_TEXTURE_2D, texture->RenderID(), 0);
+
+        if(texture->multiSampleFlag())
+        {
+            target = GL_TEXTURE_2D_MULTISAMPLE;
+        }
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers.back(), target, texture->RenderID(), 0);
         index++;
     }
 
@@ -57,9 +64,14 @@ void OpenGLFrameBuffer::Invalidate()
         case GL_DEPTH_COMPONENT32F:
             attachment = GL_DEPTH_ATTACHMENT;
             break;
+        default: 
+            throw std::runtime_error("Format error!");
     }
-    
-    glFramebufferTexture2D(GL_FRAMEBUFFER,attachment, GL_TEXTURE_2D, m_depthAttachment->RenderID(), 0);
+
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER,attachment, target, m_depthAttachment->RenderID(), 0);
+
+
     glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
 }
 

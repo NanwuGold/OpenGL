@@ -6,6 +6,7 @@ namespace OBase
 	class Context
 	{
 	public:
+		virtual ~Context() = default;
 		Context() = default;
 		virtual void Init() = 0;
 		virtual void SwapBuffers() = 0;
