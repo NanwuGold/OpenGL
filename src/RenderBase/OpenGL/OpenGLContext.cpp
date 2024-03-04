@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <utility>
+#include <string>
 
 namespace OBase
 {
@@ -30,6 +31,11 @@ namespace OBase
         OBASE_INFO("OpenGL Vendor: "   + std::string(vendor))
         OBASE_INFO("OpenGL Renderer: " + std::string(render))
         OBASE_INFO("OpenGL Renderer: " + std::string(version))
+
+        // 查询支持的最大多重采样级别
+        GLint maxSamples;
+        glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
+        OBASE_INFO("Max samples supported: " + std::to_string(maxSamples));
     }
 
     void OpenGLContext::SwapBuffers()
