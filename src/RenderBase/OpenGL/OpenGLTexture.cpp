@@ -69,12 +69,13 @@ OpenGLTexture::~OpenGLTexture()
 }
 
 
-OpenGLMultiSampleTexture::OpenGLMultiSampleTexture(const int w, const int h, const GLenum format)
+OpenGLMultiSampleTexture::OpenGLMultiSampleTexture(int w, int h, GLenum format, MultiSample sample)
     : Texture()
     , m_TextureID(0)
     , m_Width(w)
     , m_Height(h)
     , m_Format(format)
+    , m_Sample(static_cast<int>(sample))
 {
 }
 
@@ -111,18 +112,12 @@ void OpenGLMultiSampleTexture::Invalidate()
         glDeleteTextures(1, &m_TextureID);
     }
 
-
-    glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &m_TextureID);
+    glGenTextures(1, &m_TextureID);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_TextureID);
-
-    glTextureStorage2DMultisample(m_TextureID, m_Sample, m_Format, static_cast<GLsizei>(m_Width), static_cast<GLsizei>(m_Height), GL_TRUE);
-
-    glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
+    glTextureStorage2DMultisample(m_TextureID, m_Sample, m_Format, static_cast<GLsizei>(m_Width),
+    static_cast<GLsizei>(m_Height), GL_TRUE);
+    // glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, m_Sample, m_Format, static_cast<GLsizei>(m_Width),
+    //     static_cast<GLsizei>(m_Height), GL_FALSE);
 }
 
 GLenum OpenGLMultiSampleTexture::format()

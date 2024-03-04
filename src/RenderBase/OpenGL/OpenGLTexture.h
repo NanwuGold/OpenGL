@@ -4,9 +4,13 @@
 #include "RenderBase/Render/Texture.h"
 
 
-enum class MultiSample
+enum class MultiSample : uint8_t
 {
-    X4,
+    X4 = 4,
+    X6 = 6,
+    X8 = 8,
+    X16 = 16,
+    X32 = 32,
 };
 
 
@@ -50,7 +54,7 @@ private:
 class OpenGLMultiSampleTexture: public Texture
 {
 public:
-    OpenGLMultiSampleTexture(int w, int h, GLenum format);
+    OpenGLMultiSampleTexture(int w, int h, GLenum format, MultiSample sample = MultiSample::X4);
 
     OpenGLMultiSampleTexture(OpenGLMultiSampleTexture&&) = delete;
     OpenGLMultiSampleTexture(OpenGLMultiSampleTexture&) = delete;
@@ -69,16 +73,12 @@ public:
 
     bool multiSampleFlag() override;
 
-
-
 private:
     unsigned int m_TextureID;
     unsigned int m_Width;
     unsigned int m_Height;
     GLenum m_Format;
     int m_Sample{4};
-
-
 };
 
 
