@@ -106,7 +106,6 @@ void OpenGLMultiSampleTexture::Create()
 
 void OpenGLMultiSampleTexture::Invalidate()
 {
-    /// TODO: implement
     if(m_TextureID != 0)
     {
         glDeleteTextures(1, &m_TextureID);
@@ -115,9 +114,7 @@ void OpenGLMultiSampleTexture::Invalidate()
     glGenTextures(1, &m_TextureID);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_TextureID);
     glTextureStorage2DMultisample(m_TextureID, m_Sample, m_Format, static_cast<GLsizei>(m_Width),
-    static_cast<GLsizei>(m_Height), GL_TRUE);
-    // glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, m_Sample, m_Format, static_cast<GLsizei>(m_Width),
-    //     static_cast<GLsizei>(m_Height), GL_FALSE);
+    static_cast<GLsizei>(m_Height), GL_FALSE);
 }
 
 GLenum OpenGLMultiSampleTexture::format()

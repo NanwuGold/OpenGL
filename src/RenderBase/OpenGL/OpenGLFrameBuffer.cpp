@@ -71,6 +71,12 @@ void OpenGLFrameBuffer::Invalidate()
     glFramebufferTexture2D(GL_FRAMEBUFFER,attachment, target, m_depthAttachment->RenderID(), 0);
     glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
 
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        throw std::runtime_error("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+    }
+
     glBindFramebuffer(GL_FRAMEBUFFER,0);
 
 }
