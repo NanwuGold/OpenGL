@@ -6,6 +6,7 @@
 class OpenGLFrameBuffer :public FrameBuffer
 {
 public:
+
     OpenGLFrameBuffer();
 
     void Create(std::vector<OBase::Ref<Texture>> colorAttachments, OBase::Ref<Texture> depth) override;
@@ -15,6 +16,9 @@ public:
     void Resize(int w, int h) override;
 
     void UnBind() override;
+
+    unsigned RenderID() override;
+
 
 private:
     void Invalidate();

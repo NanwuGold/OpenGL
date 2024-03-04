@@ -68,14 +68,19 @@ void OpenGLFrameBuffer::Invalidate()
             throw std::runtime_error("Format error!");
     }
 
-
     glFramebufferTexture2D(GL_FRAMEBUFFER,attachment, target, m_depthAttachment->RenderID(), 0);
-
-
     glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
+
+    glBindFramebuffer(GL_FRAMEBUFFER,0);
+
 }
 
 void OpenGLFrameBuffer::UnBind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+unsigned OpenGLFrameBuffer::RenderID()
+{
+    return m_RendererID;
 }

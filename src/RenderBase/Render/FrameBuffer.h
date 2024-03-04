@@ -12,6 +12,9 @@ public:
     virtual void Bind() = 0;
     virtual void UnBind() = 0;
     virtual void Resize(int w, int h) = 0;
+
+    virtual unsigned int RenderID() = 0;
+
     static OBase::Ref<FrameBuffer> Create();
 
 };
