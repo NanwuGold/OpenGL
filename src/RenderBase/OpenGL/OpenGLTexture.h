@@ -3,17 +3,6 @@
 
 #include "RenderBase/Render/Texture.h"
 
-
-enum class MultiSample : uint8_t
-{
-    X4 = 4,
-    X6 = 6,
-    X8 = 8,
-    X16 = 16,
-    X32 = 32,
-};
-
-
 class OpenGLTexture final : public Texture
 {
 public:

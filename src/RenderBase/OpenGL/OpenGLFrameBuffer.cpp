@@ -2,15 +2,32 @@
 
 #include <iostream>
 
+#include "RenderBase/Core/Core.h"
+
+OpenGLFrameBuffer::~OpenGLFrameBuffer() = default;
+
 OpenGLFrameBuffer::OpenGLFrameBuffer()
-    :m_RendererID(0)
+    : FrameBuffer()
+    , m_RendererID(0)
 {
+
 }
 
 void OpenGLFrameBuffer::Create(std::vector<OBase::Ref<Texture>> colorAttachments, OBase::Ref<Texture> depth)
 {
     m_colorAttachments.clear();
-    m_colorAttachments.insert(m_colorAttachments.end(),colorAttachments.begin(), colorAttachments.end());
+    m_colorAttachments.insert(m_colorAttachments.end(), colorAttachments.begin(), colorAttachments.end());
+
+
+    m_Attachments.insert({ FramebufferAttachment::Depth, depth});
+
+    uint8_t index = 0;
+    for(auto & attachment: colorAttachments)
+    {
+        m_Attachments.insert({ static_cast<FramebufferAttachment>(index),attachment });
+        ++index;
+    }
+
     m_depthAttachment = depth;
 
     Invalidate();
@@ -35,6 +52,9 @@ void OpenGLFrameBuffer::Invalidate()
     
     glGenFramebuffers(1, &m_RendererID);
     Bind();
+
+
+    /// TODO: ................
 
     auto index = 0;
     std::vector<GLenum> drawBuffers;
@@ -89,4 +109,16 @@ void OpenGLFrameBuffer::UnBind()
 unsigned OpenGLFrameBuffer::RenderID()
 {
     return m_RendererID;
+}
+
+std::shared_ptr<Texture> OpenGLFrameBuffer::GetAttachment(FramebufferAttachment& index)
+{
+    if(index == FramebufferAttachment::Depth)
+    {
+        return m_depthAttachment;
+    }
+
+    OBASE_ASSERT(!m_Attachments.count(index), "No Attchement")
+    return m_Attachments.at(index);
+
 }

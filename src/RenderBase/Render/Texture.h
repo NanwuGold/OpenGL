@@ -4,6 +4,17 @@
 #include "RenderBase/pointer_ptr.hpp"
 #include <glad/glad.h>
 
+
+enum class MultiSample : uint8_t
+{
+    None,
+    X4 = 4,
+    X6 = 6,
+    X8 = 8,
+    X16 = 16,
+    X32 = 32,
+};
+
 class Texture
 {
 public:
@@ -28,7 +39,7 @@ public:
 
     virtual bool multiSampleFlag() = 0;
 
-    static OBase::Ref<Texture> Create(int w, int h, GLenum format, bool multiSampleFlag = false);
+    static OBase::Ref<Texture> Create(int w, int h, GLenum format, MultiSample sample = MultiSample::None);
 };
 
 
