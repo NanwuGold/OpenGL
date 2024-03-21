@@ -73,12 +73,6 @@ int main()
 
         const auto vertexBuffer = (OBase::VertexBuffer::Create(vertices, sizeof(vertices)));
 
-
-
-
-
-
-
         vertexBuffer->Bind();
         {
             const OBase::BufferLayout layout = {
@@ -103,11 +97,11 @@ int main()
 
     glfwSetErrorCallback(errorCallback);
 
-    auto sample = MultiSample::X16;
-    auto multiColorTexture = std::make_shared<OpenGLMultiSampleTexture>(MSAA::Window::width(), MSAA::Window::height(), GL_RGBA8,sample);
+    auto sample = MultiSample::X8;
+    auto multiColorTexture = Texture::Create(MSAA::Window::width(), MSAA::Window::height(), GL_RGBA8,sample);
     multiColorTexture->Create();
 
-    const auto multiDepthTexture = std::make_shared<OpenGLMultiSampleTexture>(MSAA::Window::width(), MSAA::Window::height(), GL_DEPTH24_STENCIL8,sample);
+    const auto multiDepthTexture = Texture::Create(MSAA::Window::width(), MSAA::Window::height(), GL_DEPTH24_STENCIL8,sample);
     multiDepthTexture->Create();
 
     const auto multiFbo = FrameBuffer::Create();

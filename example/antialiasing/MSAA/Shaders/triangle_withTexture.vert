@@ -12,7 +12,7 @@ out vec2 v_TexCoord;
 void main()
 {
     vec4 pos = vec4(position, 1.0f);
-    gl_Position = pos;
-
     v_TexCoord = a_TexCoord;
+
+    gl_Position = pos;
 }
