@@ -11,7 +11,7 @@
 namespace OBase
 {
     OpenGLContext::OpenGLContext(std::shared_ptr<GLFWwindow> window)
-    :m_Window(std::move(window))
+     :m_Window(std::move(window))
     {
 
     }

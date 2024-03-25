@@ -89,10 +89,6 @@ int main()
         indexBuffer->Bind();
 
         cubeVertexArray->SetIndexBuffer(indexBuffer);
-        cubeVertexArray->SetIndexBuffer(indexBuffer);
-        cubeVertexArray->SetIndexBuffer(indexBuffer);
-        cubeVertexArray->SetIndexBuffer(indexBuffer);
-        cubeVertexArray->SetIndexBuffer(indexBuffer);
     }
 
     glfwSetErrorCallback(errorCallback);
