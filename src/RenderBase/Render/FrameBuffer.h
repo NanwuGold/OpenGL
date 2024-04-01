@@ -39,7 +39,7 @@ public:
 
     virtual unsigned int RenderID() = 0;
 
-    virtual std::shared_ptr<Texture> GetAttachment(FramebufferAttachment & index) = 0;
+    virtual std::shared_ptr<Texture> GetAttachment(const FramebufferAttachment &index) = 0;
 
     static OBase::Ref<FrameBuffer> Create();
 

@@ -18,13 +18,12 @@ void OpenGLFrameBuffer::Create(std::vector<OBase::Ref<Texture>> colorAttachments
     m_colorAttachments.clear();
     m_colorAttachments.insert(m_colorAttachments.end(), colorAttachments.begin(), colorAttachments.end());
 
-
     m_Attachments.insert({ FramebufferAttachment::Depth, depth});
 
-    uint8_t index = 0;
+    auto index = static_cast<uint32_t>(FramebufferAttachment::Color0);
     for(auto & attachment: colorAttachments)
     {
-        m_Attachments.insert({ static_cast<FramebufferAttachment>(index),attachment });
+        m_Attachments.insert({ static_cast<FramebufferAttachment>(index), attachment });
         ++index;
     }
 
@@ -111,14 +110,17 @@ unsigned OpenGLFrameBuffer::RenderID()
     return m_RendererID;
 }
 
-std::shared_ptr<Texture> OpenGLFrameBuffer::GetAttachment(FramebufferAttachment& index)
+std::shared_ptr<Texture> OpenGLFrameBuffer::GetAttachment(const FramebufferAttachment & index)
 {
     if(index == FramebufferAttachment::Depth)
     {
         return m_depthAttachment;
     }
 
-    OBASE_ASSERT(!m_Attachments.count(index), "No Attchement")
+    auto re = m_Attachments.count(index);
+
+    OBASE_ASSERT(m_Attachments.count(index), "No Attchement")
+
     return m_Attachments.at(index);
 
 }

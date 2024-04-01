@@ -30,7 +30,7 @@ public:
 
     unsigned RenderID() override;
 
-    std::shared_ptr<Texture> GetAttachment(FramebufferAttachment& index) override;
+    std::shared_ptr<Texture> GetAttachment(const FramebufferAttachment &index) override;
 
 
 private:
