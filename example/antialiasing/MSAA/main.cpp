@@ -60,7 +60,7 @@ int main()
     const auto context = std::make_shared<OBase::OpenGLContext>(window);
     context->Init();
 
-    const auto triangleShader = std::make_shared<OpenGLShader>("./Shaders/triangle.vert", "./Shaders/triangle.frag");
+    const auto triangleShader = std::make_shared<OpenGLShader>("./Shaders/MSAA_triangle.vert", "./Shaders/MSAA_triangle.frag");
 
     const auto cubeVertexArray = OBase::VertexArray::Create();
     {
@@ -142,7 +142,7 @@ int main()
 
         quadVertexArray->SetIndexBuffer(indexBuffer);
     }
-    const auto quadShader = std::make_shared<OpenGLShader>("./Shaders/triangle_withTexture.vert", "./Shaders/triangle_withTexture.frag");
+    const auto quadShader = std::make_shared<OpenGLShader>("./Shaders/MSAA_triangle_withTexture.vert", "./Shaders/MSAA_triangle_withTexture.frag");
 
     while(!glfwWindowShouldClose(window.get()))
     {
