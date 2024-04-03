@@ -2,6 +2,7 @@
 #define OPENGL_POINER_PTR
 
 #include <memory>
+#include <functional>
 
 namespace OBase
 {
@@ -21,6 +22,12 @@ namespace OBase
     constexpr Ref<T> CreateRef(Args &&...args)
     {
         return std::make_shared<T>(std::forward<Args>(args)...);
+    }
+
+    template<typename T>
+    constexpr Ref<T> CreateRef(T * ptr)
+    {
+        return Ref<T>(ptr);
     }
 }
 
