@@ -88,16 +88,14 @@ int main()
         screenVertexArray->SetIndexBuffer(indexBuffer);
     }
 
-    /// TODO: 
     const auto quadShader = std::make_shared<OpenGLShader>("./Shaders/WA_quad.vert", "./Shaders/WA_quad.frag");
-
 
     const auto accumFB = FrameBuffer::Create();
     {
         auto color1 = Texture::Create(windowPro.width(), windowPro.height(), GL_RGBA32F, MultiSample::None);
         color1->Create();
 
-        auto color2 = Texture::Create(windowPro.width(), windowPro.height(), GL_RGB16F, MultiSample::None);
+        auto color2 = Texture::Create(windowPro.width(), windowPro.height(), GL_R16F, MultiSample::None);
         color2->Create();
 
         const auto depth = Texture::Create(windowPro.width(), windowPro.height(), GL_DEPTH32F_STENCIL8, MultiSample::None);
@@ -106,10 +104,28 @@ int main()
         accumFB->Create({ color1,color2}, depth);
     }
 
+    const auto backgroundFB = FrameBuffer::Create();
+    {
+        auto color1 = Texture::Create(windowPro.width(), windowPro.height(), GL_RGBA32F, MultiSample::None);
+        color1->Create();
+
+        const auto depth = Texture::Create(windowPro.width(), windowPro.height(), GL_DEPTH32F_STENCIL8, MultiSample::None);
+        depth->Create();
+
+        backgroundFB->Create({ color1}, depth);
+    }
+
+    quadShader->Bind();
+    quadShader->setInt("texture1", 0);
+    quadShader->setInt("texture2", 1);
+    quadShader->setInt("texture_PassCount", 2);
 
     while (!glfwWindowShouldClose(window.get()))
     {
         glfwPollEvents();
+
+        backgroundFB->Bind();
+        glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.3, 0.4, 0.5, 1.0)));
 
         accumFB->Bind();
         glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0, 0.0, 0.0, 0.0)));
@@ -122,34 +138,38 @@ int main()
         glBlendFunc(GL_ONE, GL_ONE);
 
         triangleVertexArray->Bind();
-
         triangleShader->Bind();
 
         triangleShader->setMat4("model", glm::mat4(1.0f));
-        triangleShader->setVec4("i_showColor", glm::vec4(1.0f,0.0,0.0,1.0));
+        triangleShader->setVec4("i_showColor", glm::vec4(1.0f,0.0,0.0,0.6));
         glDrawElements(GL_TRIANGLES, triangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
 
         triangleShader->setMat4("model", glm::translate(glm::mat4(1.0f),glm::vec3(0.1,0.0,0.0)));
-        triangleShader->setVec4("i_showColor", glm::vec4(0.0f, 1.0, 0.0, 1.0));
+        triangleShader->setVec4("i_showColor", glm::vec4(0.0f, 1.0, 0.0, 0.6));
         glDrawElements(GL_TRIANGLES, triangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
+        triangleShader->setMat4("model", glm::translate(glm::mat4(1.0f),glm::vec3(0.2,0.0,0.0)));
+        triangleShader->setVec4("i_showColor", glm::vec4(0.0f, 0.0, 1.0, 0.6));
+        glDrawElements(GL_TRIANGLES, triangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClearBufferfv(GL_COLOR, -1, glm::value_ptr(glm::vec4(0.3, 0.4, 0.5, 1.0)));
 
-
         glDepthMask(GL_TRUE);
-        glEnable(GL_BLEND);
-        glBlendEquation(GL_FUNC_ADD);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_BLEND);
 
         screenVertexArray->Bind();
         quadShader->Bind();
-        quadShader->setInt("texture1", 0);
-        glActiveTexture(GL_TEXTURE0);
 
+        glActiveTexture(GL_TEXTURE0);
+        backgroundFB->GetAttachment(FramebufferAttachment::Color0)->Bind();
+
+        glActiveTexture(GL_TEXTURE1);
         accumFB->GetAttachment(FramebufferAttachment::Color0)->Bind();
+
+        glActiveTexture(GL_TEXTURE2);
+        accumFB->GetAttachment(FramebufferAttachment::Color1)->Bind();
+
         glDrawElements(GL_TRIANGLES, screenVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 
@@ -159,7 +179,5 @@ int main()
     glfwTerminate();
 
     window.reset();
-
-    std::cout << __FUNCTION__ << std::endl;
     return 0;
 }
