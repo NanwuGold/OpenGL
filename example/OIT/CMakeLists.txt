@@ -1,4 +1,3 @@
 add_subdirectory(WeightedSum)
 add_subdirectory(DepthPeeling)
-add_subdirectory(WeightedAveraging_1st)
-add_subdirectory(WeightedAveraging_2st)
+add_subdirectory(WeightedAveraging)

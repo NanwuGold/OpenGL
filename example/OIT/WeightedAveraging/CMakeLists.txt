@@ -1,0 +1,2 @@
+add_subdirectory(WeightedAveraging_1st)
+add_subdirectory(WeightedAveraging_2st)
