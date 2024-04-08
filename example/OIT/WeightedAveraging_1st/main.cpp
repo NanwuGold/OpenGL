@@ -1,4 +1,8 @@
-#include <iostream>
+/**
+ * @brief Bavoil和Myer的方法实现Weighted Blend
+ * @note 该公式也有个缺点，后续版本也一样，如果不透明的实体使用该公式绘制，C0项目为0， 但公式前半部分 变为 Ci 求和项 除于 ai 求和项，  平均了颜色，所以明明不透明的实体也变得透明了。
+ */
+
 #include <Platform/WindowBase.h>
 
 #include <RenderBase/OpenGL/OpenGLContext.h>
@@ -95,7 +99,7 @@ int main()
         auto color1 = Texture::Create(windowPro.width(), windowPro.height(), GL_RGBA32F, MultiSample::None);
         color1->Create();
 
-        auto color2 = Texture::Create(windowPro.width(), windowPro.height(), GL_R16F, MultiSample::None);
+        auto color2 = Texture::Create(windowPro.width(), windowPro.height(), GL_RG16F, MultiSample::None);
         color2->Create();
 
         const auto depth = Texture::Create(windowPro.width(), windowPro.height(), GL_DEPTH32F_STENCIL8, MultiSample::None);
@@ -126,8 +130,10 @@ int main()
 
         backgroundFB->Bind();
         glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.3, 0.4, 0.5, 1.0)));
+        // 渲染不透明物体
 
         accumFB->Bind();
+        //读取实体渲染的颜色缓冲与深度缓冲 之后渲染半透明物体
         glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0, 0.0, 0.0, 0.0)));
         glClearBufferfv(GL_COLOR, 1, glm::value_ptr(glm::vec4(0.0, 0.0, 0.0, 0.0)));
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -144,11 +150,11 @@ int main()
         triangleShader->setVec4("i_showColor", glm::vec4(1.0f,0.0,0.0,0.6));
         glDrawElements(GL_TRIANGLES, triangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-        triangleShader->setMat4("model", glm::translate(glm::mat4(1.0f),glm::vec3(0.1,0.0,0.0)));
+        triangleShader->setMat4("model", glm::translate(glm::mat4(1.0f),glm::vec3(0.1,0.0,0.3)));
         triangleShader->setVec4("i_showColor", glm::vec4(0.0f, 1.0, 0.0, 0.6));
         glDrawElements(GL_TRIANGLES, triangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-        triangleShader->setMat4("model", glm::translate(glm::mat4(1.0f),glm::vec3(0.2,0.0,0.0)));
+        triangleShader->setMat4("model", glm::translate(glm::mat4(1.0f),glm::vec3(0.2,0.0,0.1)));
         triangleShader->setVec4("i_showColor", glm::vec4(0.0f, 0.0, 1.0, 0.6));
         glDrawElements(GL_TRIANGLES, triangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
@@ -157,6 +163,7 @@ int main()
 
         glDepthMask(GL_TRUE);
         glDisable(GL_BLEND);
+//        glBlendFunc(GL_ONE_MINUS_SRC_ALPHA,GL_SRC_ALPHA);
 
         screenVertexArray->Bind();
         quadShader->Bind();
@@ -171,7 +178,6 @@ int main()
         accumFB->GetAttachment(FramebufferAttachment::Color1)->Bind();
 
         glDrawElements(GL_TRIANGLES, screenVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
 
         context->SwapBuffers();
     }
