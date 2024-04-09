@@ -1,0 +1,2 @@
+add_subdirectory(WeightedAveraging)
+add_subdirectory(WeightedSum)

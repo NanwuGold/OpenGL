@@ -13,4 +13,4 @@ add_executable(${target} ${SOURCES})
 target_link_libraries(${target} PRIVATE glfw glad::glad OpenGLBase)
 target_include_directories(${target} PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
-FILE(INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/Shaders DESTINATION ${CMAKE_BINARY_DIR}/bin)
+FILE(INSTALL Shaders DESTINATION ${CMAKE_BINARY_DIR}/bin)
