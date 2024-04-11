@@ -1,6 +1,6 @@
 /**
- * @brief Bavoil和Myer的方法实现Weighted Blend
- * @note 该公式也有个缺点，后续版本也一样，如果不透明的实体使用该公式绘制，C0项目为0， 但公式前半部分 变为 Ci 求和项 除于 ai 求和项，  平均了颜色，所以明明不透明的实体也变得透明了。
+ * @brief Bavoil和Myer的方法实现Weighted Blend 的优化版本
+ * @note
  */
 
 #include "Platform/WindowBase.h"
@@ -21,7 +21,7 @@
 
 int main()
 {
-    OBase::WindowPro windowPro(800, 600, " Weighted Averaging 1st");
+    OBase::WindowPro windowPro(800, 600, " Weighted Averaging 2st");
     glfwInit();
 
     std::shared_ptr<GLFWwindow> window(
@@ -99,13 +99,16 @@ int main()
         auto color1 = Texture::Create(windowPro.width(), windowPro.height(), GL_RGBA32F, MultiSample::None);
         color1->Create();
 
-        auto color2 = Texture::Create(windowPro.width(), windowPro.height(), GL_RG16F, MultiSample::None);
+        auto color2 = Texture::Create(windowPro.width(), windowPro.height(), GL_R16F, MultiSample::None);
         color2->Create();
+
+        auto color3 = Texture::Create(windowPro.width(), windowPro.height(), GL_R16F, MultiSample::None);
+        color3->Create();
 
         const auto depth = Texture::Create(windowPro.width(), windowPro.height(), GL_DEPTH32F_STENCIL8, MultiSample::None);
         depth->Create();
 
-        accumFB->Create({ color1,color2}, depth);
+        accumFB->Create({ color1,color2,color3}, depth);
     }
 
     const auto backgroundFB = FrameBuffer::Create();
@@ -122,7 +125,8 @@ int main()
     quadShader->Bind();
     quadShader->setInt("texture1", 0);
     quadShader->setInt("texture2", 1);
-    quadShader->setInt("texture_PassCount", 2);
+    quadShader->setInt("texture3", 2);
+    quadShader->setInt("texture4", 3);
 
     while (!glfwWindowShouldClose(window.get()))
     {
@@ -135,13 +139,16 @@ int main()
         accumFB->Bind();
         //读取实体渲染的颜色缓冲与深度缓冲 之后渲染半透明物体
         glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0, 0.0, 0.0, 0.0)));
-        glClearBufferfv(GL_COLOR, 1, glm::value_ptr(glm::vec4(0.0, 0.0, 0.0, 0.0)));
+        glClearBufferfv(GL_COLOR, 1, glm::value_ptr(glm::vec4(0.0)));
+        glClearBufferfv(GL_COLOR, 2, glm::value_ptr(glm::vec4(1.0)));
         glClear(GL_DEPTH_BUFFER_BIT);
 
         glDepthMask(GL_FALSE);
         glEnable(GL_BLEND);
         glBlendEquation(GL_FUNC_ADD);
-        glBlendFunc(GL_ONE, GL_ONE);
+        glBlendFunci(0, GL_ONE, GL_ONE);  /// accum 累加颜色
+        glBlendFunci(1, GL_ONE, GL_ONE);  /// accum 累加颜色
+        glBlendFunci(2, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);  /// 目标与源的因子
 
         triangleVertexArray->Bind();
         triangleShader->Bind();
@@ -163,7 +170,6 @@ int main()
 
         glDepthMask(GL_TRUE);
         glDisable(GL_BLEND);
-//        glBlendFunc(GL_ONE_MINUS_SRC_ALPHA,GL_SRC_ALPHA);
 
         screenVertexArray->Bind();
         quadShader->Bind();
@@ -176,6 +182,9 @@ int main()
 
         glActiveTexture(GL_TEXTURE2);
         accumFB->GetAttachment(FramebufferAttachment::Color1)->Bind();
+
+        glActiveTexture(GL_TEXTURE3);
+        accumFB->GetAttachment(FramebufferAttachment::Color2)->Bind();
 
         glDrawElements(GL_TRIANGLES, screenVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
