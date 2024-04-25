@@ -1,6 +1,6 @@
 /**
  * @brief 加入权重Weighted Blend方法
- * @note
+ * @note https://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html
  */
 
 #include "Platform/WindowBase.h"
@@ -130,6 +130,7 @@ int main()
 
         backgroundFB->Bind();
         glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.3, 0.4, 0.5, 1.0)));
+        glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0,0,0, 1.0)));
         // 渲染不透明物体
 
         accumFB->Bind();
@@ -147,15 +148,15 @@ int main()
         triangleVertexArray->Bind(); 
         triangleShader->Bind();
 
-        triangleShader->setMat4("model", glm::mat4(1.0f));
+        triangleShader->setMat4("model", glm::translate(glm::mat4(1.0f),glm::vec3(0.0,0.0,0.4)));
         triangleShader->setVec4("i_showColor", glm::vec4(1.0f,0.0,0.0,0.6));
         glDrawElements(GL_TRIANGLES, triangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-        triangleShader->setMat4("model", glm::translate(glm::mat4(1.0f),glm::vec3(0.1,0.0,0.3)));
+        triangleShader->setMat4("model", glm::translate(glm::mat4(1.0f),glm::vec3(0.1,0.0,0.0)));
         triangleShader->setVec4("i_showColor", glm::vec4(0.0f, 1.0, 0.0, 0.6));
         glDrawElements(GL_TRIANGLES, triangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-        triangleShader->setMat4("model", glm::translate(glm::mat4(1.0f),glm::vec3(0.2,0.0,0.1)));
+        triangleShader->setMat4("model", glm::translate(glm::mat4(1.0f),glm::vec3(0.2,0.0,-0.4)));
         triangleShader->setVec4("i_showColor", glm::vec4(0.0f, 0.0, 1.0, 0.6));
         glDrawElements(GL_TRIANGLES, triangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 

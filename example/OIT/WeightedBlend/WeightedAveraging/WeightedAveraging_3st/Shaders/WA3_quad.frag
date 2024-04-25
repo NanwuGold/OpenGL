@@ -16,10 +16,8 @@ void main()
     vec4 rgba = texture(texture2,v_TexCoord).rgba;
     float sumOfAlpha = texture(texture3,v_TexCoord).r;
 
-    sumOfAlpha = max(sumOfAlpha,1e-5);
-    vec3 outColor1 = vec3((rgba.rgb / rgba.a) * (1.0f - sumOfAlpha));
-    vec3 out2 = backGroundColor.rgb * sumOfAlpha;
-    fragColor = vec4(outColor1 + out2,1.0f);
+    vec3 outColor = vec3((rgba.rgb / max(rgba.a,1e-5)) * (1.0f - sumOfAlpha)) + backGroundColor.rgb * sumOfAlpha;
+    fragColor = vec4(outColor,1.0f);
 }
 
 
