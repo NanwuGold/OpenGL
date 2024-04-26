@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include "Platform/WindowBase.h"
+#include "RenderBase/Core/Window.h"
 
 #include "RenderBase/OpenGL/OpenGLContext.h"
 
@@ -24,7 +24,7 @@ int main()
 {
     glfwInit();
 
-    OBase::WindowPro windowPro(800,600,"Weighted Sum");
+    OBase::WindowProps windowPro(800, 600, "Weighted Sum");
 
     std::shared_ptr<GLFWwindow> window(glfwCreateWindow(windowPro.width(),windowPro.height(),windowPro.title().c_str(),nullptr,nullptr),[](GLFWwindow* w){});
     const auto context = OBase::CreateRef<OBase::OpenGLContext>(window);

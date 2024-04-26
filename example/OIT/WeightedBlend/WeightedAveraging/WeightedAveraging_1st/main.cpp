@@ -3,7 +3,7 @@
  * @note 该公式也有个缺点，后续版本也一样，如果不透明的实体使用该公式绘制，C0项目为0， 但公式前半部分 变为 Ci 求和项 除于 ai 求和项，  平均了颜色，所以明明不透明的实体也变得透明了。
  */
 
-#include "Platform/WindowBase.h"
+#include "RenderBase/Core/Window.h"
 
 #include "RenderBase/OpenGL/OpenGLContext.h"
 
@@ -21,7 +21,7 @@
 
 int main()
 {
-    OBase::WindowPro windowPro(800, 600, " Weighted Averaging 1st");
+    OBase::WindowProps windowPro(800, 600, " Weighted Averaging 1st");
     glfwInit();
 
     std::shared_ptr<GLFWwindow> window(

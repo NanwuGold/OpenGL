@@ -5,7 +5,7 @@
 #include "RenderBase/Render/Context.h"
 
 
-class GLFWwindow;
+struct GLFWwindow;
 
 namespace OBase
 {

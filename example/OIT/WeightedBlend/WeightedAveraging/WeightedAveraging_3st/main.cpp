@@ -3,7 +3,7 @@
  * @note https://casual-effects.blogspot.com/2015/03/implemented-weighted-blended-order.html
  */
 
-#include "Platform/WindowBase.h"
+#include "RenderBase/Core/Window.h"
 
 #include "RenderBase/OpenGL/OpenGLContext.h"
 
@@ -19,9 +19,11 @@
 #include "RenderBase/Render/FrameBuffer.h"
 #include "RenderBase/Render/VertexArray.h"
 
+#include "RenderBase/Core/Window.h"
+
 int main()
 {
-    OBase::WindowPro windowPro(800, 600, " Weighted Averaging 3st");
+    OBase::WindowProps windowPro(800, 600, " Weighted Averaging 3st");
     glfwInit();
 
     std::shared_ptr<GLFWwindow> window(
