@@ -17,4 +17,6 @@
     std::cout<< x << std::endl;  \
 }
 
+#define BIT(x) (1 << x)
+
 #endif

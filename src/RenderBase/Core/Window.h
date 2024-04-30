@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <string>
+#include <RenderBase/Event/Event.h>
 
 namespace OBase
 {
@@ -38,26 +39,49 @@ namespace OBase
     class Window
     {
     public:
+        using EventCallbackFn = std::function<void(Event &)>;
+    public:
         Window() = default;
+        virtual ~Window() = default;
 
         Window(const Window& other) = delete;
         Window(Window&& other) noexcept = delete;
         Window& operator=(const Window& other) = delete;
         Window& operator=(Window&& other) noexcept = delete;
 
-        virtual ~Window() = default;
-
-        // using EventCallbackFn = std::function<void(Event &)>;
-
+        /**
+         * @brief update
+         */
         virtual void OnUpdate() = 0;
 
+        /**
+         * @brief 获取窗口的宽
+         * @return uint32_t
+         */
         [[nodiscard]] virtual uint32_t GetWidth() const = 0;
 
+        /**
+         * @brief 获取窗口的高
+         * @return uint32_t
+         */
         [[nodiscard]] virtual uint32_t GetHeight() const = 0;
 
-        // virtual void SetEventCallBack(const EventCallbackFn &callback) = 0;
+        /**
+         * @brief 设置事件回调
+         * @param callback 回调函数
+         */
+        virtual void SetEventCallBack(const EventCallbackFn &callback) = 0;
+
+        /**
+         * @brief 垂直同步
+         * @param bool enable
+         */
         virtual void SetVSync(bool enable) = 0;
 
+        /**
+         * @brief 获取垂直同步状态
+         * @return bool
+         */
         [[maybe_unused]] [[nodiscard]] virtual bool IsVSync() const = 0;
 
         /**

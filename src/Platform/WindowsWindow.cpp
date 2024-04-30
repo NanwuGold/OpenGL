@@ -1,15 +1,16 @@
 #include "WindowsWindow.h"
 
 #include <RenderBase/OpenGL/OpenGLContext.h>
-#include <GLFW/glfw3.h>
-
-#include "RenderBase/Core/Core.h"
+#include <RenderBase/Core/Core.h>
+#include <RenderBase/Event/ApplicationEvent.h>
 
 #include <iostream>
 
+#include <GLFW/glfw3.h>
+
 namespace OBase
 {
-    namespace 
+    namespace
     {
         bool g_SGlfwInitialized = false;
 
@@ -52,8 +53,7 @@ namespace OBase
         if (enable)
         {
             glfwSwapInterval(1);
-        }
-        else
+        } else
         {
             glfwSwapInterval(0);
         }
@@ -70,12 +70,12 @@ namespace OBase
         return m_Window;
     }
 
-    void WindowsWindow::Init(const WindowProps & props)
+    void WindowsWindow::Init(const WindowProps &props)
     {
         m_Data.m_Title = props.m_Title;
         m_Data.m_Width = props.m_W;
         m_Data.m_Height = props.m_H;
-        
+
         if (!g_SGlfwInitialized)
         {
             int success = false;
@@ -87,15 +87,43 @@ namespace OBase
         }
         m_Window = glfwCreateWindow(props.width(), props.height(), props.m_Title.c_str(), nullptr, nullptr);
 
-        const auto window = std::shared_ptr<GLFWwindow>(m_Window,[](GLFWwindow * w){});
+        const auto window = std::shared_ptr<GLFWwindow>(m_Window, [](GLFWwindow *w) {});
         m_Context = new OpenGLContext(window);
         m_Context->Init();
+
+        glfwSetWindowUserPointer(m_Window, &m_Data);
+        SetVSync(true);
+
+        /// init event callback
+        glfwSetWindowSizeCallback(m_Window, [](GLFWwindow *window, int w, int h) {
+                                      auto data = static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+                                      data->m_Width = w;
+                                      data->m_Height = h;
+
+                                      WindowResizeEvent event(w, h);
+                                      data->EventCallback(event);
+                                  }
+        );
+
+        glfwSetWindowCloseCallback(m_Window, [](GLFWwindow *window) {
+                                       auto data = static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+                                       WindowCloseEvent event;
+                                       data->EventCallback(event);
+                                   }
+        );
+
+
     }
 
     void WindowsWindow::ShutDown()
     {
         glfwDestroyWindow(m_Window);
         m_Window = nullptr;
+    }
+
+    void WindowsWindow::SetEventCallBack(const Window::EventCallbackFn &callback)
+    {
+        m_Data.EventCallback = callback;
     }
 
 

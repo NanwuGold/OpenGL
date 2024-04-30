@@ -31,11 +31,13 @@ namespace OBase
 
         [[nodiscard]] uint32_t GetHeight() const override;
 
-        void SetVSync(bool enable) override;
+        [[maybe_unused]] void SetVSync(bool enable) override;
 
         [[nodiscard]] bool IsVSync() const override;
 
         [[nodiscard]] void *GetNativeWindow() const override;
+
+        void SetEventCallBack(const EventCallbackFn &callback) override;
 
     private:
         void Init(const WindowProps & props);
@@ -50,7 +52,7 @@ namespace OBase
             std::string m_Title;
             unsigned int m_Width, m_Height;
             bool m_VSync;
-            // EventCallbackFn EventCallback;
+            EventCallbackFn EventCallback;
         };
 
         WindowData m_Data;
