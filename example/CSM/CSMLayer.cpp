@@ -19,11 +19,6 @@ namespace OBase
         /// INIT Resources
         /// TODO:
 
-
-
-
-
-
     }
 
     void CSMLayer::OnDetach()

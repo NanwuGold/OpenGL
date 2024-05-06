@@ -49,7 +49,7 @@ void OpenGLFrameBuffer::Invalidate()
         glDeleteFramebuffers(1, &m_RendererID);
     }
     
-    glGenFramebuffers(1, &m_RendererID);
+    glCreateFramebuffers(1, &m_RendererID);
     Bind();
 
 
