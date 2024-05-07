@@ -8,11 +8,17 @@
 
 namespace OBase
 {
-    class LayerStack
+    class LayerStack final
     {
     public:
-        LayerStack();
 
+        LayerStack(LayerStack&) = delete;
+        LayerStack(LayerStack&&) = delete;
+
+        LayerStack& operator=(LayerStack&) = delete;
+        LayerStack& operator=(LayerStack&&) = delete;
+
+        LayerStack();
         ~LayerStack();
 
         [[maybe_unused]] void PushLayer(const Ref<Layer> &layer);
@@ -38,4 +44,4 @@ namespace OBase
 
 
 
-#endif //HAZEL_LAYERSTACK_H
+#endif //OBASE_LAYERSTACK_H

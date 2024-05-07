@@ -69,8 +69,8 @@ namespace OBase
         virtual ~Application();
 
     protected:
-        virtual void OnCloseEvent(const WindowCloseEvent & event);;
-        virtual void OnResizeEvent(const WindowResizeEvent & event){};
+        virtual void OnCloseEvent(const WindowCloseEvent & event);
+        virtual void OnResizeEvent(const WindowResizeEvent & event);
 
     private:
         std::shared_ptr<Window> m_Window;

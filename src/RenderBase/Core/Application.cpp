@@ -10,7 +10,7 @@ namespace OBase
 {
     std::unique_ptr<Application, Application::ApplicationDeleter> Application::s_Instance = nullptr;
 
-    Application::Application(const std::string &name)
+    Application::Application(const std::string & name)
     {
         m_Window = std::shared_ptr<Window>(Window::Create(WindowProps(name)));
 
@@ -79,4 +79,10 @@ namespace OBase
     {
         m_Running = false;
     }
-} // OBase
+
+    void Application::OnResizeEvent(const WindowResizeEvent& event)
+    {
+        
+    }
+
+} // OBase 

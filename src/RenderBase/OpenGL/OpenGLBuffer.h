@@ -30,10 +30,17 @@ namespace OBase
 
     };
 
-    class OpenGLIndexBuffer : public IndexBuffer
+    class OpenGLIndexBuffer final: public IndexBuffer
     {
     public:
-        OpenGLIndexBuffer(uint32_t *indices, uint32_t count);
+
+        OpenGLIndexBuffer(OpenGLIndexBuffer&) = default;
+        OpenGLIndexBuffer(OpenGLIndexBuffer&&) = default;
+
+        OpenGLIndexBuffer& operator=(const OpenGLIndexBuffer&) = default;
+        OpenGLIndexBuffer& operator=(OpenGLIndexBuffer&&) = default;
+
+        OpenGLIndexBuffer(const uint32_t *indices, uint32_t count);
 
         ~OpenGLIndexBuffer() override;
 
