@@ -9,7 +9,13 @@ namespace OBase
     class CSMLayer : public Layer
     {
     public:
-        CSMLayer(std::string name = "Layer");
+
+        CSMLayer(CSMLayer&) = delete;
+        CSMLayer(const CSMLayer&&) = delete;
+        CSMLayer& operator=(CSMLayer&) = delete;
+        CSMLayer& operator=(const CSMLayer&&) = delete;
+
+        explicit CSMLayer(std::string name = "Layer");
 
         ~CSMLayer() override;
 

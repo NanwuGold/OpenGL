@@ -10,17 +10,24 @@
 
 namespace OBase
 {
-    class CSM : public Application
+    class CsmApp : public Application
     {
     public:
-        CSM()
-            :Application("CSM Window")
+
+        CsmApp(CsmApp&) = delete;
+        CsmApp(const CsmApp&&) = delete;
+        CsmApp& operator=(CsmApp&) = delete;
+        CsmApp& operator=(const CsmApp&&) = delete;
+
+
+        CsmApp()
+            :Application("CsmApp Window")
         {
-            const auto RenderLayer = std::make_shared<CSMLayer>("CSM Render");
+            const auto RenderLayer = std::make_shared<CSMLayer>("CsmApp Render");
             PushLayer(RenderLayer);
         }
 
-        ~CSM() override
+        ~CsmApp() override
         {
 
         }
@@ -39,7 +46,7 @@ namespace OBase
 
     std::unique_ptr<Application> CreateApplication()
     {
-        return std::make_unique<CSM>();
+        return std::make_unique<CsmApp>();
     }
 }
 
