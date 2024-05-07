@@ -6,7 +6,7 @@ namespace OBase
     class Timestep
     {
     public:
-        explicit Timestep(float time = 0.0f)
+        explicit Timestep(const float time = 0.0f)
             : m_Time(time)
         {
         }

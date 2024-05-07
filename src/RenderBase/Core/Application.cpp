@@ -1,12 +1,10 @@
 #include "Application.h"
-#include "RenderBase/Event/ApplicationEvent.h"
-#include "RenderBase/Event/Event.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <glm/vec4.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <RenderBase/Event/ApplicationEvent.h>
+#include <RenderBase/Event/Event.h>
 
 namespace OBase
 {

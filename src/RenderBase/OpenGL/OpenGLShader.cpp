@@ -1,9 +1,9 @@
 #include "OpenGLShader.h"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <glad/glad.h>
-
 #include <glm/gtc/type_ptr.hpp>
 
 OpenGLShader::OpenGLShader(const char* vertex_path, const char* fragment_path, const char* geometry_path)

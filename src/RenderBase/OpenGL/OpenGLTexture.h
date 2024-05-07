@@ -1,7 +1,7 @@
 #ifndef OPENGL_RENDERBASE_OPENGLTEXTURE_H
 #define OPENGL_RENDERBASE_OPENGLTEXTURE_H
 
-#include "RenderBase/Render/Texture.h"
+#include <RenderBase/Render/Texture.h>
 
 class OpenGLTexture final : public Texture
 {

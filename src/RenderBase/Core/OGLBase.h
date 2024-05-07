@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include  "Application.h"
+#include "Application.h"
 #include "EntryPoint.h"
 
 #endif // !OBASE_OGLBASE_H_

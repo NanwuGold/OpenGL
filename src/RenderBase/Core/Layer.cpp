@@ -3,15 +3,13 @@
 namespace OBase
 {
     Layer::Layer(std::string name)
-    :m_DebugName(name)
+    :m_DebugName(std::move(name))
     {
 
     }
 
-    Layer::~Layer()
-    {
+    Layer::~Layer() = default;
 
-    }
 
     void Layer::OnAttach()
     {
@@ -24,6 +22,11 @@ namespace OBase
     }
 
     void Layer::OnUpdate(Timestep ts)
+    {
+
+    }
+
+    void Layer::OnEvent(Event& event)
     {
 
     }

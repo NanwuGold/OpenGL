@@ -1,9 +1,10 @@
 #ifndef OBASE_LAYERSTACK_H
 #define OBASE_LAYERSTACK_H
 
-#include <RenderBase/Core/Layer.h>
 #include <vector>
+
 #include <RenderBase/pointer_ptr.hpp>
+#include <RenderBase/Core/Layer.h>
 
 namespace OBase
 {

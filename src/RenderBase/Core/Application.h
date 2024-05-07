@@ -1,11 +1,11 @@
 #ifndef OPENGL_APPLICATION_H
 #define OPENGL_APPLICATION_H
 
-#include "RenderBase/Core/Window.h"
-#include "RenderBase/Core/LayerStack.h"
-
-#include <string>
 #include <memory>
+#include <string>
+
+#include <RenderBase/Core/LayerStack.h>
+#include <RenderBase/Core/Window.h>
 
 namespace OBase
 {
@@ -20,11 +20,20 @@ namespace OBase
     public:
         explicit Application(const std::string & name = "Render Window");
 
+        Application(Application&) = delete;
+        Application(const Application&&) = delete;
+        Application & operator=(Application&) = delete;
+        Application & operator=(const Application&&) = delete;
+
         /**
          * @brief render loop
          */
         void Run();
 
+        /**
+         * @brief 处理事件
+         * @param e 传递的事件
+         */
         void OnEvent(Event &e);
 
         /**
@@ -52,7 +61,7 @@ namespace OBase
          * @brief 获取当前应用程序对象窗口对象
          * @return Window
          */
-        Window & GetWindow() const
+        [[nodiscard]] Window & GetWindow() const
         {
             return *m_Window;
         }

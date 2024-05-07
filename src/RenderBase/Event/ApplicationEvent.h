@@ -1,5 +1,5 @@
-#ifndef _APPLICATIONEVENT_H_
-#define _APPLICATIONEVENT_H_
+#ifndef APPLICATIONEVENT_H_
+#define APPLICATIONEVENT_H_
 
 #include "Event.h"
 
@@ -78,4 +78,4 @@ namespace OBase
 
 }
 
-#endif // !HAZEL_APPLICATIONEVENT_H_
+#endif // !APPLICATIONEVENT_H_

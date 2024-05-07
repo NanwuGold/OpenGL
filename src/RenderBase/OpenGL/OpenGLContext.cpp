@@ -1,12 +1,13 @@
 #include "OpenGLContext.h"
-#include "RenderBase/Core/Core.h"
+
+#include <iostream>
+#include <string>
+#include <utility>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <iostream>
-#include <utility>
-#include <string>
+#include <RenderBase/Core/Core.h>
 
 namespace OBase
 {

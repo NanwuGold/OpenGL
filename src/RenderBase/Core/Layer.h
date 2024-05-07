@@ -2,6 +2,7 @@
 #define OPENGL_LAYER_H
 
 #include <string>
+#include <RenderBase/Event/Event.h>
 
 #include "Timestep.h"
 
@@ -18,7 +19,7 @@ namespace OBase
 
         virtual void OnUpdate(Timestep ts);
 
-        // virtual void OnEvent(Event &event);
+        virtual void OnEvent(Event &event);
 
         virtual void OnImGuiRender();
 

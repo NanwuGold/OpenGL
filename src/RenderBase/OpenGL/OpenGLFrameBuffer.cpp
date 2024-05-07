@@ -1,8 +1,7 @@
 #include "OpenGLFrameBuffer.h"
 
 #include <iostream>
-
-#include "RenderBase/Core/Core.h"
+#include <RenderBase/Core/Core.h>
 
 OpenGLFrameBuffer::~OpenGLFrameBuffer() = default;
 

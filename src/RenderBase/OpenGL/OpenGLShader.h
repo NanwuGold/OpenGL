@@ -3,8 +3,8 @@
 
 #include <string>
 #include <glm/glm.hpp>
-#include "RenderBase/Render/Enum.h"
-#include <typeinfo>
+
+#include <RenderBase/Render/Enum.h>
 
 using namespace OGLShader;
 

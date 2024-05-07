@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <string>
+
 #include <RenderBase/Event/Event.h>
 
 namespace OBase
@@ -74,7 +75,7 @@ namespace OBase
 
         /**
          * @brief 垂直同步
-         * @param bool enable
+         * @param enable bool
          */
         virtual void SetVSync(bool enable) = 0;
 
