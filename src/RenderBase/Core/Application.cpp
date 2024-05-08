@@ -6,11 +6,14 @@
 #include <RenderBase/Event/ApplicationEvent.h>
 #include <RenderBase/Event/Event.h>
 
+#include <RenderBase/pointer_ptr.hpp>
+
 namespace OBase
 {
     std::unique_ptr<Application, Application::ApplicationDeleter> Application::s_Instance = nullptr;
 
     Application::Application(const std::string & name)
+    : m_imGuiLayer(CreateRef<ImGuiLayer>("ImGui Layer"))
     {
         m_Window = std::shared_ptr<Window>(Window::Create(WindowProps(name)));
 
@@ -20,6 +23,8 @@ namespace OBase
 
         m_Window->SetVSync(true);
         s_Instance = std::unique_ptr<Application, ApplicationDeleter>(this, ApplicationDeleter());
+
+        PushOverLay(m_imGuiLayer);
     }
 
     void Application::Run()
@@ -36,6 +41,13 @@ namespace OBase
             }
 
             ///TODO: update imGui ： make it as submodule
+
+            m_imGuiLayer->Begin();
+            for (const auto &layer : m_LayerStack)
+            {
+                layer->OnImGuiRender();
+            }
+            m_imGuiLayer->End();
 
             m_Window->OnUpdate();
         }
@@ -64,14 +76,24 @@ namespace OBase
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowResizeEvent>([this](auto &&event) {
             OnResizeEvent(std::forward<decltype(event)>(event));
-            return true;
+            return false;
         });
 
         dispatcher.Dispatch<WindowCloseEvent>([this](auto &&event)
         {
             OnCloseEvent(std::forward<decltype(event)>(event));
-            return true;
+            return false;
         });
+
+
+        for(auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
+        {
+            (*--it)->OnEvent(e);
+            if(e.handle())
+            {
+                break;
+            }
+        }
 
     }
 

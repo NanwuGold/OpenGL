@@ -11,6 +11,11 @@ namespace OBase
     class Layer
     {
     public:
+        Layer(const Layer&) = default;
+        Layer(Layer&&) = default;
+        Layer& operator=(const Layer&) = default;
+        Layer& operator=(Layer&&) = default;
+
         explicit Layer(std::string name = "Layer");
         virtual ~Layer();
 

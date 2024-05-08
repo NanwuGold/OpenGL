@@ -6,6 +6,7 @@
 
 #include <RenderBase/Core/LayerStack.h>
 #include <RenderBase/Core/Window.h>
+#include <RenderBase/ImGui/ImGuiLayer.h>
 
 namespace OBase
 {
@@ -77,6 +78,10 @@ namespace OBase
         bool m_Running{true};
         float m_LastFrameTime{0.0f};
         LayerStack m_LayerStack;
+
+        Ref<ImGuiLayer> m_imGuiLayer;
+
+
 
     private:
         struct ApplicationDeleter
