@@ -1,10 +1,8 @@
-#version 450 core
-layout(location = 0) out vec4 vFragColor;
+## 颜色混合方程
 
-uniform sampler2D inTex1;
-uniform sampler2D inTex2;
+### 兼容混合半透明与不透明颜色
 
-in vec2 vTexCoord;
+```glsl
 
 vec4 blendColor(vec3 srcColor,vec3 dstColor,float srcAlpha,float dstAlpha)
 {
@@ -15,14 +13,11 @@ vec4 blendColor(vec3 srcColor,vec3 dstColor,float srcAlpha,float dstAlpha)
     color.a = srcAlpha - srcAlpha * dstAlpha + dstAlpha;
     /// color.a = srcAlpha *( 1.0 - dstAlpha) + dstAlpha
     color.rgb = color.rgb / color.a;
-
+    
     return color;
 }
 
 
-void main()
-{
-    vec4 color1 = texture(inTex1,vTexCoord).rgba;
-    vec4 color2 = texture(inTex2,vTexCoord).rgba;
-    vFragColor = blendColor(color1.rgb,color2.rgb,color1.a,color2.a);
-}
+```
+
+

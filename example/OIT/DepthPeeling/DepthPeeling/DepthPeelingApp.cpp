@@ -5,14 +5,19 @@
 
 namespace OBase
 {
-    class DepthPeeling : public Application
+    class DepthPeeling final : public Application
     {
     public:
-        DepthPeeling(const std::string & name = "Depth Peeling")
+        DepthPeeling(DepthPeeling&) = delete;
+        DepthPeeling(const DepthPeeling&&) = delete;
+        DepthPeeling& operator=(DepthPeeling&) = delete;
+        DepthPeeling& operator=(const DepthPeeling&&) = delete;
+
+        explicit DepthPeeling(const std::string & name = "Depth Peeling")
             :Application(name)
         {
-            const auto RenderLayer = std::make_shared<DepthPeelingLayer>("DepthPeeling Render");
-            PushLayer(RenderLayer);
+            const auto renderLayer = std::make_shared<DepthPeelingLayer>("DepthPeeling Render");
+            PushLayer(renderLayer);
         }
 
         ~DepthPeeling() override;

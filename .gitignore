@@ -33,7 +33,7 @@
 
 # directory
 .idea/
-
-.vs
-out
-cmake-build-debug
+.vs/
+out/
+cmake-build-debug/
+build/
