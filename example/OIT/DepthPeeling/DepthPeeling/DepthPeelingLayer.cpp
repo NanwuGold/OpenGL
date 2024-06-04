@@ -148,68 +148,72 @@ namespace OBase
         m_TriangleShader->Bind();
         DrawScene(m_TriangleShader); ///< 获取最小深度
 
-        /// 开始遮挡查询
-        std::array<Ref<FrameBuffer>,2> depthpeelingFbos{m_firstFramebuffer, m_secondFramebuffer};
-        std::array<Ref<FrameBuffer>,2> blendFbos{m_Blend1Framebuffer, m_Blend2Framebuffer};
-        Ref<FrameBuffer> currentBlendFbos = m_Blend1Framebuffer;
-        std::array<Ref<Texture>,2> blendTexs{m_firstFramebuffer->GetAttachment(FramebufferAttachment::Color0),
-                                             m_secondFramebuffer->GetAttachment(FramebufferAttachment::Color0)};
+        Ref<FrameBuffer> currentBlendFbos = m_firstFramebuffer;
 
-        for(auto i = 1; i < (m_PeelingNums - 1) * 2 ;i++)
+        if(m_useDepthPeeling)
         {
-            auto currentID = i % 2;
-            auto preID = 1 - currentID;
+            /// 开始遮挡查询
+            std::array<Ref<FrameBuffer>, 2> depthpeelingFbos{m_firstFramebuffer, m_secondFramebuffer};
+            std::array<Ref<FrameBuffer>, 2> blendFbos{m_Blend1Framebuffer, m_Blend2Framebuffer};
+            currentBlendFbos = m_Blend1Framebuffer;
+            std::array<Ref<Texture>, 2> blendTexs{m_firstFramebuffer->GetAttachment(FramebufferAttachment::Color0),
+                                                  m_secondFramebuffer->GetAttachment(FramebufferAttachment::Color0)};
 
-            depthpeelingFbos[currentID]->Bind();
-            glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0)));
-            glClear(GL_DEPTH_BUFFER_BIT);
-
-            glDisable(GL_BLEND);
-            glEnable(GL_DEPTH_TEST);
-
-            glBeginQuery(GL_SAMPLES_PASSED, m_DepthPeelingQuery);
-
-            m_PeelingShader->Bind();
-            glActiveTexture(GL_TEXTURE0);
-            depthpeelingFbos[preID]->GetAttachment(FramebufferAttachment::Depth)->Bind();
-            DrawScene(m_PeelingShader);
-
-            glEndQuery(GL_SAMPLES_PASSED);
-
-            /// 获取遮挡查询结果
-            GLuint sampleCount;
-            glGetQueryObjectuiv(m_DepthPeelingQuery, GL_QUERY_RESULT, &sampleCount);
-
-            if(sampleCount < 1)
+            for (auto i = 1; i < (m_PeelingNums - 1) * 2; i++)
             {
-                break;
+                auto currentID = i % 2;
+                auto preID = 1 - currentID;
+
+                depthpeelingFbos[currentID]->Bind();
+                glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0)));
+                glClear(GL_DEPTH_BUFFER_BIT);
+
+                glDisable(GL_BLEND);
+                glEnable(GL_DEPTH_TEST);
+
+                glBeginQuery(GL_SAMPLES_PASSED, m_DepthPeelingQuery);
+
+                m_PeelingShader->Bind();
+                glActiveTexture(GL_TEXTURE0);
+                depthpeelingFbos[preID]->GetAttachment(FramebufferAttachment::Depth)->Bind();
+                DrawScene(m_PeelingShader);
+
+                glEndQuery(GL_SAMPLES_PASSED);
+
+                /// 获取遮挡查询结果
+                GLuint sampleCount;
+                glGetQueryObjectuiv(m_DepthPeelingQuery, GL_QUERY_RESULT, &sampleCount);
+
+                if (sampleCount < 1)
+                {
+                    break;
+                }
+
+                currentBlendFbos = blendFbos[preID];
+
+                if (i == 1)
+                {
+                    blendTexs[0] = depthpeelingFbos[0]->GetAttachment(FramebufferAttachment::Color0);
+                    blendTexs[1] = depthpeelingFbos[1]->GetAttachment(FramebufferAttachment::Color0);
+                } else
+                {
+                    blendTexs[0] = blendFbos[currentID]->GetAttachment(FramebufferAttachment::Color0);
+                    blendTexs[1] = depthpeelingFbos[currentID]->GetAttachment(FramebufferAttachment::Color0);
+                }
+
+                /// 合并结果
+                currentBlendFbos->Bind();
+                glDisable(GL_DEPTH_TEST);
+                glDisable(GL_BLEND);
+
+                m_blendShader->Bind();
+                glActiveTexture(GL_TEXTURE0);
+                blendTexs[0]->Bind();
+                glActiveTexture(GL_TEXTURE1);
+                blendTexs[1]->Bind();
+
+                glDrawArrays(GL_TRIANGLES, 0, 6);
             }
-
-            currentBlendFbos = blendFbos[preID];
-
-            if(i == 1)
-            {
-                blendTexs[0] = depthpeelingFbos[0]->GetAttachment(FramebufferAttachment::Color0);
-                blendTexs[1] = depthpeelingFbos[1]->GetAttachment(FramebufferAttachment::Color0);
-            }
-            else
-            {
-                blendTexs[0] = blendFbos[currentID]->GetAttachment(FramebufferAttachment::Color0);
-                blendTexs[1] = depthpeelingFbos[currentID]->GetAttachment(FramebufferAttachment::Color0);
-            }
-
-            /// 合并结果
-            currentBlendFbos->Bind();
-            glDisable(GL_DEPTH_TEST);
-            glDisable(GL_BLEND);
-
-            m_blendShader->Bind();
-            glActiveTexture(GL_TEXTURE0);
-            blendTexs[0]->Bind();
-            glActiveTexture(GL_TEXTURE1);
-            blendTexs[1]->Bind();
-
-            glDrawArrays(GL_TRIANGLES,0,6);
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -237,10 +241,12 @@ namespace OBase
         ImGui::DragFloat3("Green Pos", glm::value_ptr(m_greenTrianglePos), speed, -1.0, 1.0);
         ImGui::DragFloat3("Blue Pos", glm::value_ptr(m_blueTrianglePos), speed, -1.0, 1.0);
 
+        ImGui::Checkbox("Use DepthPeeling",&m_useDepthPeeling);
+        ImGui::SliderInt("Peeling Nums",&m_PeelingNums, 2, 8, "%d");
+
+#if 0
         const char *items[] = {"OpaQue Color", "OpaQue Depth", "Peeling Color", "Peeling Depth", "Blend Color"};
         static int itemCurrentIdx = 4; // 当前选中的索引
-
-        ImGui::SliderInt("Peeling Nums",&m_PeelingNums, 1, 8, "%d");
 
         ImGui::Combo("show Texture", &itemCurrentIdx, items, IM_ARRAYSIZE(items));
 
@@ -254,7 +260,7 @@ namespace OBase
 
         const auto showImage = textures.at(std::string(items[itemCurrentIdx]));
         ImGui::Image(reinterpret_cast<void *>(showImage), ImVec2(160, 120),ImVec2(0,1),ImVec2(1,0));
-
+#endif
         const ImGuiIO &io = ImGui::GetIO();
         (void) io;
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);

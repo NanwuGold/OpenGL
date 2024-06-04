@@ -61,6 +61,7 @@ namespace OBase
         float m_defaultClearDepthVal{1.0};
         GLuint m_DepthPeelingQuery;
 
+        bool m_useDepthPeeling{false};
         int m_PeelingNums{6};
     };
 
