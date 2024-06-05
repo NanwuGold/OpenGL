@@ -38,7 +38,7 @@ namespace OBase
         void OnImGuiRender() override;
 
     private:
-        void DrawScene(Ref <OpenGLShader> shader);
+        void DrawScene(const Ref <OpenGLShader>& shader);
 
 
     private:
@@ -59,7 +59,7 @@ namespace OBase
         Ref<FrameBuffer> m_Blend2Framebuffer;
 
         float m_defaultClearDepthVal{1.0};
-        GLuint m_DepthPeelingQuery;
+        GLuint m_DepthPeelingQuery{0};
 
         bool m_useDepthPeeling{false};
         int m_PeelingNums{6};
