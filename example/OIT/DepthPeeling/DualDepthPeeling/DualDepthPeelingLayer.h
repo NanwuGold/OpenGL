@@ -1,0 +1,12 @@
+#ifndef OPENGL_DUALDEPTHPEELINGLAYER_H
+#define OPENGL_DUALDEPTHPEELINGLAYER_H
+
+namespace OBase
+{
+class DualDepthPeelingLayer
+{
+
+};
+}
+
+#endif //OPENGL_DUALDEPTHPEELINGLAYER_H

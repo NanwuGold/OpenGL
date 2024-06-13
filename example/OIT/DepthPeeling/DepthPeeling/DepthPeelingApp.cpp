@@ -39,8 +39,6 @@ namespace OBase
         Application::OnResizeEvent(event);
     }
 
-
-
     std::unique_ptr<Application> CreateApplication()
     {
         return std::make_unique<DepthPeeling>("DepthPeeling Application");
