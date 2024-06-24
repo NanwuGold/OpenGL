@@ -1,10 +1,10 @@
+#include <RenderBase/Core/OGLBase.h>
 #include <iostream>
-
-#include <RenderBase/Core/Application.h>
+#include "DualDepthPeelingLayer.h"
+#include "RenderBase/pointer_ptr.hpp"
 
 namespace OBase
 {
-
     class DualDepthPeeling : public OBase::Application
     {
     public:
@@ -19,9 +19,14 @@ namespace OBase
         explicit DualDepthPeeling(const std::string &name = "DualDepthPeeling")
                 : OBase::Application(name)
         {
-
+            const auto layer = CreateRef<DualDepthPeelingLayer>("Dual Layer");
+            PushLayer(layer);
         }
-
-
     };
+
+    std::unique_ptr<Application> CreateApplication()
+    {
+        return std::make_unique<DualDepthPeeling>();
+    }
+
 }
