@@ -9,21 +9,14 @@ namespace OBase
     {
     public:
         explicit ImGuiLayer(const std::string & name);
-
         ~ImGuiLayer() override;
 
         void OnAttach() override;
-
         void OnDetach() override;
-
         void OnUpdate(Timestep ts) override;
-
         void OnEvent(Event &event) override;
-
         void OnImGuiRender() override;
-
         void Begin();
-
         void End();
     };
 

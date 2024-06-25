@@ -4,51 +4,27 @@
 #include <glad/glad.h>
 #include <RenderBase/Core/Layer.h>
 
+#include <imgui.h>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/vec3.hpp>
+
 namespace OBase
 {
     class DualDepthPeelingLayer :  public OBase::Layer
     {
     public:
+        DualDepthPeelingLayer(const std::string & name = "Dual");
+        ~DualDepthPeelingLayer() override;
 
-        DualDepthPeelingLayer(const std::string & name = "Dual")
-                : OBase::Layer(name)
-        {
+        void OnAttach() override;
+        void OnDetach() override;
+        void OnUpdate(Timestep ts) override;
+        void OnEvent(Event &event) override;
+        void OnImGuiRender() override;
 
-        }
+    private:
+        glm::vec4 m_BackgroundColor{0.2,0.3,0.4,1.0};
 
-        ~DualDepthPeelingLayer() override
-        {
-
-        }
-
-        void OnAttach() override
-        {
-            Layer::OnAttach();
-        }
-
-        void OnDetach() override
-        {
-            Layer::OnDetach();
-        }
-
-        void OnUpdate(Timestep ts) override
-        {
-            Layer::OnUpdate(ts);
-
-            glClearColor(0.3,0.4,0.5,1.0);
-            glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-        }
-
-        void OnEvent(Event &event) override
-        {
-            Layer::OnEvent(event);
-        }
-
-        void OnImGuiRender() override
-        {
-
-        }
     };
 }
 
