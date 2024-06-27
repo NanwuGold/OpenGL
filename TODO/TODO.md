@@ -10,15 +10,16 @@
 
 ### [OIT][OIT_1]
 
-- [ ] Depth Peeling
+- [x] Depth Peeling
+
 ---
 - Wighted Blend
   - [X] Wighted Sum - Meshkin's Method
 
-  - [ ] Weighted Averaging
+  - [x] Weighted Averaging
     - [X] Bavoil and Myers’ Method
-    - [ ] New Blended OIT Method
-    - [ ] Depth Weights Improve Occlusion
+    - [x] New Blended OIT Method
+    - [x] Depth Weights Improve Occlusion
 
 ---
 
@@ -31,8 +32,13 @@
 
 - [ ] Multi-Layer Alpha Blending
 
+---
+
+- [ ] PerPixel Linked List
 
 ---
+
+- [ ] Screen Door Transparency
 
 [OIT_1]: https://zhuanlan.zhihu.com/p/353940259 "OIT 方法"
 [OIT_2]: https://zhuanlan.zhihu.com/p/430980851 "OIT 方法"
