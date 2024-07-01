@@ -7,14 +7,16 @@
 #include <imgui.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec3.hpp>
+#include "RenderBase/Render/VertexArray.h"
+#include "RenderBase/OpenGL/OpenGLShader.h"
 
 namespace OBase
 {
-    class DualDepthPeelingLayer :  public OBase::Layer
+    class ScreenAxisAppLayer : public OBase::Layer
     {
     public:
-        DualDepthPeelingLayer(const std::string & name = "Dual");
-        ~DualDepthPeelingLayer() override;
+        explicit ScreenAxisAppLayer(const std::string & name = "Dual");
+        ~ScreenAxisAppLayer() override;
 
         void OnAttach() override;
         void OnDetach() override;
@@ -24,8 +26,14 @@ namespace OBase
 
     private:
         glm::vec4 m_BackgroundColor{0.2,0.3,0.4,1.0};
+//        float m_XRotate{0};
+//        float m_YRotate{0};
+//        float m_ZRotate{0};
+
+        Ref<VertexArray> TriangleVertexArray;
+        Ref<OpenGLShader> m_TriangleShader;
 
     };
 }
 
-#endif //OPENGL_DUALDEPTHPEELINGLAYER_H
+#endif //OPENGL_SCREENAXISAPPLAYER_H

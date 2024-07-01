@@ -5,23 +5,23 @@
 
 namespace OBase
 {
-    class DualDepthPeelingApp : public Application
+    class ScreenAxisApp : public Application
     {
     public:
-        explicit DualDepthPeelingApp(const std::string &name = "DualDepthPeelingApp")
+        explicit ScreenAxisApp(const std::string &name = "DualDepthPeelingApp")
                 : OBase::Application(name)
         {
-            PushLayer(CreateRef<DualDepthPeelingLayer>("DualDepthPeeling Layer"));
+            PushLayer(CreateRef<ScreenAxisAppLayer>("DualDepthPeeling Layer"));
         }
 
-        DualDepthPeelingApp(DualDepthPeelingApp &) = delete;
-        DualDepthPeelingApp(const DualDepthPeelingApp &&) = delete;
-        DualDepthPeelingApp &operator=(DualDepthPeelingApp &) = delete;
-        DualDepthPeelingApp &operator=(const DualDepthPeelingApp &&) = delete;
+        ScreenAxisApp(ScreenAxisApp &) = delete;
+        ScreenAxisApp(const ScreenAxisApp &&) = delete;
+        ScreenAxisApp &operator=(ScreenAxisApp &) = delete;
+        ScreenAxisApp &operator=(const ScreenAxisApp &&) = delete;
     };
 
     std::unique_ptr<Application> CreateApplication()
     {
-        return std::make_unique<DualDepthPeelingApp>();
+        return std::make_unique<ScreenAxisApp>();
     }
 }
