@@ -1,0 +1,116 @@
+#include "ScreenAxisAppLayer.h"
+#include "RenderBase/Render/VertexArray.h"
+#include "RenderBase/Core/Application.h"
+#include <RenderBase/Render/Buffer.h>
+#include <RenderBase/Render/FrameBuffer.h>
+
+namespace OBase
+{
+    ScreenAxisAppLayer::ScreenAxisAppLayer(const std::string &name)
+            : OBase::Layer(name)
+    {
+
+    }
+
+    ScreenAxisAppLayer::~ScreenAxisAppLayer()
+    {
+
+    }
+
+    void ScreenAxisAppLayer::OnImGuiRender()
+    {
+        ImGui::Begin("Settings");
+        ImGui::ColorEdit3("BackGround Color",glm::value_ptr(m_BackgroundColor),ImGuiColorEditFlags_NoAlpha);
+        ImGui::SliderAngle("x rotating",&m_XRotate,0.0,90.0);
+        ImGui::SliderAngle("y rotating",&m_YRotate,0.0,90.0);
+        ImGui::SliderAngle("z rotating",&m_ZRotate,0.0,90.0);
+        ImGui::End();
+    }
+
+    void ScreenAxisAppLayer::OnUpdate(Timestep ts)
+    {
+        Layer::OnUpdate(ts);
+        glClearBufferfv(GL_COLOR, 0, glm::value_ptr(m_BackgroundColor));
+
+        m_TriangleShader->Bind();
+
+        glm::mat4 model(1.0);
+
+        glm::vec3 cameraPos(0,0,3.0);
+        cameraPos.x = 0.0 + 3.0 * glm::cos(m_YRotate);
+        cameraPos.y = 0.0 + 3.0 * glm::sin(m_XRotate);
+        cameraPos.z = 0.0 + 3.0 * glm::sin(m_YRotate) * glm::cos(m_XRotate);
+
+        auto view = glm::lookAt(cameraPos,glm::vec3(0,0,0),glm::vec3(0,1.0,0.0));
+        auto projection = glm::ortho(-1.0,1.0,-1.0,1.0,0.01,4.01);
+
+        m_TriangleShader->setMat4("model",model);
+        m_TriangleShader->setMat4("view",view);
+        m_TriangleShader->setMat4("projection",projection);
+
+        TriangleVertexArray->Bind();
+
+        glDrawElements(GL_TRIANGLES,TriangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT,nullptr);
+    }
+
+    void ScreenAxisAppLayer::OnEvent(Event &event)
+    {
+        Layer::OnEvent(event);
+    }
+
+    void ScreenAxisAppLayer::OnAttach()
+    {
+        TriangleVertexArray = VertexArray::Create();
+        {
+            float vertices[3 * 4] =
+                    {
+//                            -.5f, -.5f, .0f, 0.0f, 0.2f, 0.8f, 1.0f,
+//                            .5f, -.5f, .0f, 0.2f, 0.4f, 0.8f, 1.0f,
+//                            .0f, +.5f, .0f, 0.8f, 0.8f, 0.2f, 1.0f
+
+                            0.0, 0.0, 0.0,
+                            1.0f, 0.0f, .0f,
+                            0.0f, 1.0f, 0.0f,
+                            0.0f, 0.0f, 1.0f,
+                    };
+
+            const auto vertexBuffer = (VertexBuffer::Create(vertices, sizeof(vertices)));
+
+            vertexBuffer->Bind();
+            {
+                const BufferLayout layout = {
+                        {ShaderDataType::Float3, "a_Position"},
+                        // {ShaderDataType::Float4, "a_Color"}
+                };
+                vertexBuffer->SetLayout(layout);
+            }
+
+            TriangleVertexArray->AddVertexBuffer(vertexBuffer);
+
+            uint32_t indices[3] = {0, 1, 2};
+            const auto indexBuffer = (IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+            indexBuffer->Bind();
+
+            TriangleVertexArray->SetIndexBuffer(indexBuffer);
+        }
+
+#if 1
+        m_TriangleShader = CreateRef<OpenGLShader>("./Shaders/dual_triangle.vert","./Shaders/dual_triangle.frag","./Shaders/triangle_geom.glsl");
+#endif
+
+        // m_TriangleShader = CreateRef<OpenGLShader>("./Shaders/dual_triangle.vert","./Shaders/dual_triangle.frag");
+
+        const auto &window = OBase::Application::Get().GetWindow();
+        int windowWidget = static_cast<int>(window.GetWidth());
+        int windowHeight = static_cast<int>(window.GetHeight());
+
+        m_TriangleShader->Bind();
+        m_TriangleShader->setVec2("screenSize", glm::vec2(windowWidget,windowHeight));
+
+    }
+
+    void ScreenAxisAppLayer::OnDetach()
+    {
+        //destory resources
+    }
+}
