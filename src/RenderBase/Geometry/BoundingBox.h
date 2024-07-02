@@ -2,7 +2,6 @@
 #define OPENGL_BOUNDINGBOX_H
 
 #include <glm/vec3.hpp>
-#include <array>
 
 namespace OBase
 {
@@ -24,20 +23,20 @@ namespace OBase
          */
         void expendBox(const BoundingBox & otherBox);
 
-        glm::dvec3 min()
+        glm::dvec3 min() const
         {
-            return m_min;
+            return m_Min;
         }
 
-        glm::dvec3 max()
+        glm::dvec3 max() const
         {
-            return m_max;
+            return m_Max;
         }
 
 
     private:
-        glm::dvec3 m_min{std::numeric_limits<double>::max()};
-        glm::dvec3 m_max{std::numeric_limits<double>::lowest()};
+        glm::dvec3 m_Min{std::numeric_limits<double>::max()};
+        glm::dvec3 m_Max{std::numeric_limits<double>::lowest()};
     };
 
 } // OBase
