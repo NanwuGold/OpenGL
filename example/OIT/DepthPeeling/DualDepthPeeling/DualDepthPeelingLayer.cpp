@@ -6,28 +6,25 @@
 
 namespace OBase
 {
-    ScreenAxisAppLayer::ScreenAxisAppLayer(const std::string &name)
+    DualDepthPeelingLayer::DualDepthPeelingLayer(const std::string &name)
             : OBase::Layer(name)
     {
 
     }
 
-    ScreenAxisAppLayer::~ScreenAxisAppLayer()
+    DualDepthPeelingLayer::~DualDepthPeelingLayer()
     {
 
     }
 
-    void ScreenAxisAppLayer::OnImGuiRender()
+    void DualDepthPeelingLayer::OnImGuiRender()
     {
         ImGui::Begin("Settings");
         ImGui::ColorEdit3("BackGround Color",glm::value_ptr(m_BackgroundColor),ImGuiColorEditFlags_NoAlpha);
-//        ImGui::SliderAngle("x rotating",&m_XRotate,0.0,90.0);
-//        ImGui::SliderAngle("y rotating",&m_YRotate,0.0,90.0);
-//        ImGui::SliderAngle("z rotating",&m_ZRotate,0.0,90.0);
         ImGui::End();
     }
 
-    void ScreenAxisAppLayer::OnUpdate(Timestep ts)
+    void DualDepthPeelingLayer::OnUpdate(Timestep ts)
     {
         Layer::OnUpdate(ts);
         glClearBufferfv(GL_COLOR, 0, glm::value_ptr(m_BackgroundColor));
@@ -44,15 +41,15 @@ namespace OBase
 
         TriangleVertexArray->Bind();
 
-        glDrawElements(GL_TRIANGLES,TriangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT,nullptr);
+        glDrawElements(GL_TRIANGLES, TriangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT,nullptr);
     }
 
-    void ScreenAxisAppLayer::OnEvent(Event &event)
+    void DualDepthPeelingLayer::OnEvent(Event &event)
     {
         Layer::OnEvent(event);
     }
 
-    void ScreenAxisAppLayer::OnAttach()
+    void DualDepthPeelingLayer::OnAttach()
     {
         TriangleVertexArray = VertexArray::Create();
         {
@@ -94,7 +91,7 @@ namespace OBase
 
     }
 
-    void ScreenAxisAppLayer::OnDetach()
+    void DualDepthPeelingLayer::OnDetach()
     {
         //destory resources
     }
