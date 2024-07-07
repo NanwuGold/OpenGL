@@ -10,6 +10,8 @@
 #include "RenderBase/Render/VertexArray.h"
 #include "RenderBase/OpenGL/OpenGLShader.h"
 
+#include <RenderBase/Geometry/BoundingBox.h>
+
 namespace OBase
 {
     class DualDepthPeelingLayer : public OBase::Layer
@@ -29,6 +31,12 @@ namespace OBase
 
         Ref<VertexArray> TriangleVertexArray;
         Ref<OpenGLShader> m_TriangleShader;
+
+        int m_ZoomDelta{};
+
+        BoundingBox m_box{};
+
+        float m_rotateY{0};
 
     };
 }

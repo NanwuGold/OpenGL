@@ -3,6 +3,8 @@
 #include "RenderBase/Core/Application.h"
 #include <RenderBase/Render/Buffer.h>
 #include <RenderBase/Render/FrameBuffer.h>
+#include <RenderBase/Geometry/BoundingBox.h>
+#include <RenderBase/Camera/CameraFunc.h>
 
 namespace OBase
 {
@@ -31,10 +33,18 @@ namespace OBase
 
         m_TriangleShader->Bind();
 
-        glm::mat4 model(1.0);
-        auto view = glm::lookAt(glm::vec3(0,0,3.0),glm::vec3(0,0,0),glm::vec3(0,1.0,0.0));
-        auto projection = glm::ortho(-1.0,1.0,-1.0,1.0,0.01,10.0);
+        auto mat = glm::rotate(glm::mat4(1.0),glm::radians(m_rotateY),glm::vec3(0,1.0,0));
+        CameraFunc cameraFunc(m_box, glm::vec3 (mat * glm::vec4(0,0,1.0,1.0)));
 
+        auto view = glm::lookAt(cameraFunc.getPosition(), cameraFunc.getTarget(), glm::vec3(0,1.0,0.0));
+
+        auto min = m_box.min();
+        auto max = m_box.max();
+
+
+        auto projection = glm::ortho(min.x,max.x,min.y,max.y,0.01,10.0);
+
+        glm::mat4 model(1.0);
         m_TriangleShader->setMat4("model",model);
         m_TriangleShader->setMat4("view",view);
         m_TriangleShader->setMat4("projection",projection);
@@ -89,6 +99,7 @@ namespace OBase
         m_TriangleShader->Bind();
         m_TriangleShader->setVec2("screenSize", glm::vec2(windowWidget,windowHeight));
 
+        m_box = BoundingBox(glm::dvec3(-2),glm::dvec3(2));
     }
 
     void DualDepthPeelingLayer::OnDetach()
