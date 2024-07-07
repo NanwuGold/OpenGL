@@ -1,15 +1,24 @@
-//
-// Created by RanLH on 2024/7/2.
-//
-
 #ifndef OPENGL_CAMERAFUNC_H
 #define OPENGL_CAMERAFUNC_H
 
-namespace OBase {
+#include <RenderBase/Geometry/BoundingBox.h>
+#include <glm/glm.hpp>
 
-class CameraFunc {
+namespace OBase
+{
+    class CameraFunc
+    {
+    public:
+        explicit CameraFunc(const BoundingBox &box, const glm::vec3 & front);
 
-};
+        glm::vec3 getTarget();
+
+        glm::vec3 getPosition();
+
+    private:
+        BoundingBox m_fitBox;
+        glm::vec3 m_front;
+    };
 
 } // OBase
 
