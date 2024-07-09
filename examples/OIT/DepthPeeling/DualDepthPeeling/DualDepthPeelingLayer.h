@@ -11,6 +11,7 @@
 #include "RenderBase/OpenGL/OpenGLShader.h"
 
 #include <RenderBase/Geometry/BoundingBox.h>
+#include <RenderBase/OpenGL/OpenGLFrameBuffer.h>
 
 namespace OBase
 {
@@ -29,14 +30,16 @@ namespace OBase
     private:
         glm::vec4 m_BackgroundColor{0.2,0.3,0.4,1.0};
 
-        Ref<VertexArray> TriangleVertexArray;
+        Ref<FrameBuffer> m_DualDepthPeelingFramebuffer;   ///< 用于剥离层
+        Ref<FrameBuffer> m_BlendFramebuffer;              ///< 混合剥离的结果
+
+        Ref<VertexArray> m_DataVertexArray;
+        Ref<OpenGLShader> m_InitDualDepthShader;
         Ref<OpenGLShader> m_TriangleShader;
 
-        int m_ZoomDelta{};
+        BoundingBox m_box{};  ///< 场景的包围盒
 
-        BoundingBox m_box{};
-
-        float m_rotateY{0};
+        float m_rotateY{0};   ///< 旋转
 
     };
 }
