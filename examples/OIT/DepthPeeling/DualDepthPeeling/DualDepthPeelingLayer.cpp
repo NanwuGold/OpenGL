@@ -41,17 +41,17 @@ namespace OBase
         auto min = m_box.min();
         auto max = m_box.max();
 
-
         auto projection = glm::ortho(min.x,max.x,min.y,max.y,0.01,10.0);
 
         glm::mat4 model(1.0);
+
         m_TriangleShader->setMat4("model",model);
         m_TriangleShader->setMat4("view",view);
         m_TriangleShader->setMat4("projection",projection);
 
-        TriangleVertexArray->Bind();
+        m_DataVertexArray->Bind();
 
-        glDrawElements(GL_TRIANGLES, TriangleVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT,nullptr);
+        glDrawElements(GL_TRIANGLES, m_DataVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
     }
 
     void DualDepthPeelingLayer::OnEvent(Event &event)
@@ -61,7 +61,7 @@ namespace OBase
 
     void DualDepthPeelingLayer::OnAttach()
     {
-        TriangleVertexArray = VertexArray::Create();
+        m_DataVertexArray = VertexArray::Create();
         {
             float vertices[3 * 7] =
                     {
@@ -81,13 +81,13 @@ namespace OBase
                 vertexBuffer->SetLayout(layout);
             }
 
-            TriangleVertexArray->AddVertexBuffer(vertexBuffer);
+            m_DataVertexArray->AddVertexBuffer(vertexBuffer);
 
             uint32_t indices[3] = {0, 1, 2};
             const auto indexBuffer = (IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
             indexBuffer->Bind();
 
-            TriangleVertexArray->SetIndexBuffer(indexBuffer);
+            m_DataVertexArray->SetIndexBuffer(indexBuffer);
         }
 
         m_TriangleShader = CreateRef<OpenGLShader>("./Shaders/dual_triangle.vert","./Shaders/dual_triangle.frag");
