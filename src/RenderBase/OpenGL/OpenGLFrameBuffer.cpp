@@ -71,7 +71,8 @@ void OpenGLFrameBuffer::Invalidate()
     }
 
     GLenum attachment = GL_DEPTH_STENCIL_ATTACHMENT;
-    switch (m_depthAttachment->format())
+    const auto format = m_depthAttachment ? m_depthAttachment->format() : GL_DEPTH24_STENCIL8;
+    switch (format)
     {
         case GL_DEPTH24_STENCIL8:
         case  GL_DEPTH32F_STENCIL8:
@@ -86,17 +87,20 @@ void OpenGLFrameBuffer::Invalidate()
             throw std::runtime_error("Format error!");
     }
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER,attachment, target, m_depthAttachment->RenderID(), 0);
-    glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
+    if(m_depthAttachment)
+    {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, target, m_depthAttachment->RenderID(), 0);
+    }
 
+    glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
         throw std::runtime_error("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+        // TODO: make check as func
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER,0);
-
 }
 
 void OpenGLFrameBuffer::UnBind()
