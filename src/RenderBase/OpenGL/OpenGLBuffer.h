@@ -5,12 +5,19 @@
 
 namespace OBase
 {
-    class OpenGLVertexBuffer : public VertexBuffer
+    class OpenGLVertexBuffer final: public VertexBuffer
     {
     public:
-        explicit OpenGLVertexBuffer(uint32_t size);
+        OpenGLVertexBuffer() = delete;
 
+        explicit OpenGLVertexBuffer(uint32_t size);
         explicit OpenGLVertexBuffer(float *vertices, uint32_t size);
+
+        OpenGLVertexBuffer(const OpenGLVertexBuffer&) = delete;
+        OpenGLVertexBuffer(OpenGLVertexBuffer &&) = delete;
+
+        OpenGLVertexBuffer& operator=(const OpenGLVertexBuffer&) = delete;
+        OpenGLVertexBuffer& operator=(OpenGLVertexBuffer&&) = delete;
 
         ~OpenGLVertexBuffer() override;
 

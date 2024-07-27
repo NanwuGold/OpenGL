@@ -18,7 +18,14 @@ namespace OBase
     class VertexArray
     {
     public:
+        VertexArray() = default;
         virtual ~VertexArray() = default;
+
+        VertexArray(VertexArray&&) = delete;
+        VertexArray(VertexArray&) = delete;
+
+        VertexArray& operator=(VertexArray&&) = delete;
+        VertexArray& operator=(VertexArray&) = delete;
 
         virtual void Bind() const = 0;
 
