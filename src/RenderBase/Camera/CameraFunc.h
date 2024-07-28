@@ -9,15 +9,15 @@ namespace OBase
     class CameraFunc
     {
     public:
-        explicit CameraFunc(const BoundingBox &box, const glm::vec3 & front);
+        explicit CameraFunc(const BoundingBox &box, const glm::vec3 & cameraPos, const glm::vec3& targetPos);
 
-        glm::vec3 getTarget();
-
-        glm::vec3 getPosition();
+        glm::vec3 getTarget() const;
+        glm::vec3 getPosition() const;
 
     private:
-        BoundingBox m_fitBox;
-        glm::vec3 m_front;
+        BoundingBox m_FitBox;
+        glm::vec3 m_CameraPos;
+        glm::vec3 m_CameraLookAt;
     };
 
 } // OBase

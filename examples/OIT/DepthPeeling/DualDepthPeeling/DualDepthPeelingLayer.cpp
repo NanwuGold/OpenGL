@@ -10,84 +10,97 @@
 
 namespace
 {
-    int g_numPasses = 2;
+    int g_numPasses = 4;
+    GLuint g_queryId;
 }
 
 namespace OBase
 {
-    DualDepthPeelingLayer::DualDepthPeelingLayer(const std::string &name)
-            : OBase::Layer(name)
+    DualDepthPeelingLayer::DualDepthPeelingLayer(const std::string& name)
+        : Layer(name)
     {
-
     }
 
-    DualDepthPeelingLayer::~DualDepthPeelingLayer()
-    {
+    DualDepthPeelingLayer::~DualDepthPeelingLayer() = default;
 
-    }
-
-    void DualDepthPeelingLayer::initDualSources()
+    void DualDepthPeelingLayer::InitDualSources()
     {
-        const auto & window = OBase::Application::Get().GetWindow();
-        int windowWidget = static_cast<int>(window.GetWidth());
-        int windowHeight = static_cast<int>(window.GetHeight());
+        const auto& window = OBase::Application::Get().GetWindow();
+        const int windowWidget = static_cast<int>(window.GetWidth());
+        const int windowHeight = static_cast<int>(window.GetHeight());
 
         m_DualDepthPeelingFramebuffer = FrameBuffer::Create();
         {
-            for(auto i = 0; i < 2;i++)
+            for (auto i = 0; i < 2; i++)
             {
-                m_DualDepthTextures[i] = Texture::Create(windowWidget,windowHeight,GL_RG32F,MultiSample::None);
+                m_DualDepthTextures[i] = Texture::Create(windowWidget, windowHeight,GL_RG32F, MultiSample::None);
                 m_DualDepthTextures[i]->Create();
 
-                m_DualFrontColorTextures[i] = Texture::Create(windowWidget,windowHeight,GL_RGBA8,MultiSample::None);
+                m_DualFrontColorTextures[i] = Texture::Create(windowWidget, windowHeight,GL_RGBA8, MultiSample::None);
                 m_DualFrontColorTextures[i]->Create();
 
-                m_DualBackColorTextures[i] = Texture::Create(windowWidget,windowHeight,GL_RGBA8,MultiSample::None);
+                m_DualBackColorTextures[i] = Texture::Create(windowWidget, windowHeight,GL_RGBA8, MultiSample::None);
                 m_DualBackColorTextures[i]->Create();
             }
         }
 
         m_BlendFramebuffer = FrameBuffer::Create();
         {
-            auto blendDepth = Texture::Create(windowWidget, windowHeight, GL_DEPTH24_STENCIL8,
-                                               MultiSample::None);
+            const auto blendDepth = Texture::Create(windowWidget, windowHeight, GL_DEPTH24_STENCIL8,
+                                                    MultiSample::None);
             blendDepth->Create();
             m_BlendTexture = Texture::Create(windowWidget, windowHeight, GL_RGBA8,
                                              MultiSample::None);
             m_BlendTexture->Create();
-            m_BlendFramebuffer->Create({m_BlendTexture},blendDepth);
+            m_BlendFramebuffer->Create({m_BlendTexture}, blendDepth);
         }
 
 
         const auto depth = Texture::Create(windowWidget, windowHeight, GL_DEPTH24_STENCIL8,
                                            MultiSample::None);
         depth->Create();
-        m_DualDepthPeelingFramebuffer->Create({m_DualDepthTextures[0],m_DualFrontColorTextures[0],
-                                               m_DualBackColorTextures[0],m_DualDepthTextures[1],
-                                               m_DualFrontColorTextures[1],
-                                               m_DualBackColorTextures[1],m_BlendTexture},depth);
+        m_DualDepthPeelingFramebuffer->Create({
+                                                  m_DualDepthTextures[0], m_DualFrontColorTextures[0],
+                                                  m_DualBackColorTextures[0], m_DualDepthTextures[1],
+                                                  m_DualFrontColorTextures[1],
+                                                  m_DualBackColorTextures[1], m_BlendTexture
+                                              }, depth);
 
+        glGenQueries(1, &g_queryId);
+
+    }
+
+    void DualDepthPeelingLayer::RenderScene(OBase::Ref<OpenGLShader>& shader) const
+    {
+        auto model = glm::mat4(1.0);
+        for (auto & [pos, color] : elements)
+        {
+            model = glm::translate(glm::mat4(1.0), pos);
+            shader->setMat4("model", model);
+            shader->setVec4("outColor", color);
+            glDrawElements(GL_TRIANGLES, m_DataVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        }
     }
 
     void DualDepthPeelingLayer::OnAttach()
     {
-        initDualSources();
+        InitDualSources();
         m_DataVertexArray = VertexArray::Create();
         {
             float vertices[3 * 7] =
-                    {
-                            -.5f, -.5f, .0f, 0.0f, 0.2f, 0.8f, 1.0f,
-                            .5f, -.5f, .0f, 0.2f, 0.4f, 0.8f, 1.0f,
-                            .0f, +.5f, .0f, 0.8f, 0.8f, 0.2f, 1.0f
-                    };
+            {
+                -.5f, -.5f, .0f, 0.0f, 0.2f, 0.8f, 0.5f,
+                .5f, -.5f, .0f, 0.2f, 0.4f, 0.8f, 0.5f,
+                .0f, +.5f, .0f, 0.8f, 0.8f, 0.2f, 0.5f
+            };
 
             const auto vertexBuffer = (VertexBuffer::Create(vertices, sizeof(vertices)));
 
             vertexBuffer->Bind();
             {
                 const BufferLayout layout = {
-                        {ShaderDataType::Float3, "a_Position"},
-                        {ShaderDataType::Float4, "a_Color"}
+                    {ShaderDataType::Float3, "a_Position"},
+                    {ShaderDataType::Float4, "a_Color"}
                 };
                 vertexBuffer->SetLayout(layout);
             }
@@ -101,32 +114,47 @@ namespace OBase
             m_DataVertexArray->SetIndexBuffer(indexBuffer);
         }
 
-        m_TriangleShader = CreateRef<OpenGLShader>("./Shaders/dual_triangle.vert","./Shaders/dual_triangle.frag");
-        m_InitDepthLayerShader = CreateRef<OpenGLShader>("./Shaders/dual_triangle.vert","./Shaders/dual_init_depth_frag.glsl");
+        m_PeelingFinalShader = CreateRef<OpenGLShader>("./Shaders/dual_peeling_final.vert", "./Shaders/dual_peeling_final.frag");
 
-        const auto &window = OBase::Application::Get().GetWindow();
-        int windowWidget = static_cast<int>(window.GetWidth());
-        int windowHeight = static_cast<int>(window.GetHeight());
+        m_InitDepthLayerShader = CreateRef<OpenGLShader>("./Shaders/dual_init_depth_vert.glsl",
+                                                         "./Shaders/dual_init_depth_frag.glsl");
+        m_PeelingLayerShader = CreateRef<OpenGLShader>("./Shaders/dual_peeling_peeling.vert",
+                                                       "./Shaders/dual_peeling_peeling.frag");
+        m_BlendBackPeelingBlendShader = CreateRef<OpenGLShader>("./Shaders/dual_blend_back.vert",
+                                                                "./Shaders/dual_blend_back.frag");
 
-        m_TriangleShader->Bind();
-        m_TriangleShader->setVec2("screenSize", glm::vec2(windowWidget,windowHeight));
+        const auto& window = OBase::Application::Get().GetWindow();
 
-        m_box = BoundingBox(glm::dvec3(-2),glm::dvec3(2));
+        m_Box = BoundingBox(glm::dvec3(-2), glm::dvec3(2));
+
+        m_PeelingFinalShader->Bind();
+        m_PeelingFinalShader->setInt("FrontBlenderTex", 0);
+        m_PeelingFinalShader->setInt("BackBlenderTex", 1);
+        m_PeelingFinalShader->setInt("DepthBlenderTex", 2);
+
+        m_BlendBackPeelingBlendShader->Bind();
+        m_BlendBackPeelingBlendShader->setInt("screenTexture", 0);
+
+        m_PeelingLayerShader->Bind();
+        m_PeelingLayerShader->setInt("DepthTexture", 0);
+        m_PeelingLayerShader->setInt("FrontColorTexture", 1);
+        m_PeelingLayerShader->setVec2("viewSize", glm::vec2(window.GetWidth(),window.GetHeight()));
     }
 
     void DualDepthPeelingLayer::OnImGuiRender()
     {
         ImGui::Begin("Settings");
-        ImGui::ColorEdit3("BackGround Color",glm::value_ptr(m_BackgroundColor),ImGuiColorEditFlags_NoAlpha);
-        ImGui::SliderFloat("Camera rotate",&m_rotateY,-180,180);
+        ImGui::ColorEdit3("BackGround Color", glm::value_ptr(m_BackgroundColor), ImGuiColorEditFlags_NoAlpha);
+        ImGui::SliderFloat("Camera rotate", &m_RotateY, -180, 180);
         auto index = 0;
-        for(auto & pos : m_translatePos)
+        for (auto & [pos,color] : elements)
         {
-            auto label = std::string("Pos") + std::to_string(index++);
-            ImGui::DragFloat3(label.c_str(),glm::value_ptr(pos),0.05,-1.0,1.0);
+            auto label = std::string("Pos") + std::to_string(index);
+            ImGui::DragFloat3(label.c_str(), glm::value_ptr(pos), 0.05f, -1.0f, 1.0f);
+            label = std::string("Color") + std::to_string(index);
+            ImGui::ColorEdit4(label.c_str(), glm::value_ptr(color));
+            index++;
         }
-
-        ImGui::Image(reinterpret_cast<void*>(m_DualDepthTextures[0]->RenderID()),ImVec2{200,160});
         ImGui::End();
     }
 
@@ -137,70 +165,100 @@ namespace OBase
 
         m_DualDepthPeelingFramebuffer->Bind();
 
-        auto colorClearBuffer = glm::vec4(0.0,0.0,0.0,0.0);
-        auto depthClearValue = glm::vec4(-1.0,-1.0,0.0,0.0);
-        glClearBufferfv(GL_COLOR, 0, glm::value_ptr(depthClearValue));
-        glClearBufferfv(GL_COLOR, 1, glm::value_ptr(colorClearBuffer));
-        glClearBufferfv(GL_COLOR, 2, glm::value_ptr(colorClearBuffer));
+        glDrawBuffers(static_cast<GLsizei>(m_Buffers.size()), m_Buffers.data());
+        glClearBufferfv(GL_COLOR, 0, glm::value_ptr(m_DepthClearValue));
+        glClearBufferfv(GL_COLOR, 1, glm::value_ptr(m_ColorClearBuffer));
+        glClearBufferfv(GL_COLOR, 2, glm::value_ptr(m_ColorClearBuffer));
         glClearBufferfv(GL_COLOR, 6, glm::value_ptr(m_BackgroundColor));
         glBlendEquation(GL_MAX);
 
         /// -------------------------------------------------------------
         /// init first depth layer
         /// -------------------------------------------------------------
-        glDrawBuffer(buffers[0]);
+        glDrawBuffer(m_Buffers[0]);
         m_InitDepthLayerShader->Bind();
 
-        auto mat = glm::rotate(glm::mat4(1.0),glm::radians(m_rotateY),glm::vec3(0,1.0,0));
-        CameraFunc cameraFunc(m_box, glm::vec3 (mat * glm::vec4(0,0,1.0,1.0)));
-        auto view = glm::lookAt(cameraFunc.getPosition(), cameraFunc.getTarget(), glm::vec3(0,1.0,0.0));
-        auto min = m_box.min();
-        auto max = m_box.max();
-        auto projection = glm::ortho(min.x,max.x,min.y,max.y,0.01,10.0);
-        glm::mat4 model(1.0);
+        const CameraFunc cameraFunc(m_Box, glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, 0.0, 0.0));
+        const auto view = glm::lookAt(cameraFunc.getPosition(), cameraFunc.getTarget(), glm::vec3(0, 1.0, 0.0));
+        const auto min = m_Box.min();
+        const auto max = m_Box.max();
+        const auto projection = glm::ortho(min.x, max.x, min.y, max.y, 0.01, 10.0);
 
-        m_InitDepthLayerShader->setMat4("model",model);
-        m_InitDepthLayerShader->setMat4("view",view);
-        m_InitDepthLayerShader->setMat4("projection",projection);
+        m_InitDepthLayerShader->setMat4("view", view);
+        m_InitDepthLayerShader->setMat4("projection", projection);
+
         m_DataVertexArray->Bind();
-        glDrawElements(GL_TRIANGLES, m_DataVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
-        for(const auto & pos : m_translatePos)
-        {
-            model = glm::translate(glm::mat4(1.0),pos);
-            m_InitDepthLayerShader->setMat4("model",model);
-            glDrawElements(GL_TRIANGLES, m_DataVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-        }
+        RenderScene(m_InitDepthLayerShader);
 
         /// -------------------------------------------------------------
         /// do peeling depth layer
         /// -------------------------------------------------------------
 
-        auto currID = 0;
-        for(int pass = 1; pass < g_numPasses; pass++)
+        int outFrontIndex = 0;
+        for (int pass = 1; pass < g_numPasses; pass++)
         {
             /// 一共六个颜色缓冲 每次使用三个颜色缓冲分别记录当前被剥离层的深度 以及前后被剥离的颜色
-            currID = pass % 2;    ///< 获取当前后方向被剥离的结果
-            auto prevID = 1 - currID;   ///< 获取前一次记录的深度信息 在剥离的时候使用
-            auto bufferID = currID * 3;  ///< 记录当前使用的颜色缓冲的起点 往后数三则为当前次剥离使用的颜色缓冲
+            const auto currentIndex = pass % 2; ///< 获取当前后方向被剥离的结果
+            const auto prevIndex = 1 - currentIndex; ///< 获取前一次记录的深度信息 在剥离的时候使用
+            const auto bufferIndex = currentIndex * 3; ///< 记录当前使用的颜色缓冲的起点 往后数三则为当前次剥离使用的颜色缓冲
+            outFrontIndex = currentIndex;
+            /// 清空缓存
+            glDrawBuffers(static_cast<GLsizei>(m_Buffers.size()), m_Buffers.data());
+            glClearBufferfv(GL_COLOR, bufferIndex, glm::value_ptr(m_DepthClearValue));
+            glClearBufferfv(GL_COLOR, bufferIndex + 1, glm::value_ptr(m_ColorClearBuffer));
+            glClearBufferfv(GL_COLOR, bufferIndex + 2, glm::value_ptr(m_ColorClearBuffer));
 
-            glDrawBuffers(buffers.size(), buffers.data());
-            glClearBufferfv(GL_COLOR, bufferID, glm::value_ptr(depthClearValue));
-            glClearBufferfv(GL_COLOR, bufferID + 1, glm::value_ptr(colorClearBuffer));
-            glClearBufferfv(GL_COLOR, bufferID + 2, glm::value_ptr(colorClearBuffer));
+            /// 指定绘制的buffer
+            glDrawBuffers(3, &m_Buffers[bufferIndex]);
+            glBlendEquation(GL_MAX);  ///< 每个分量都需要比较最大值
+
+            m_DataVertexArray->Bind();
+            m_PeelingLayerShader->Bind();
+
+            /// 绑定纹理 上一帧剥离的深度范围
+            glActiveTexture(GL_TEXTURE0);
+            m_DualDepthTextures[prevIndex]->Bind();
+            glActiveTexture(GL_TEXTURE1);
+            m_DualFrontColorTextures[prevIndex]->Bind();
+
+            m_PeelingLayerShader->setMat4("view", view);
+            m_PeelingLayerShader->setMat4("projection", projection);
+            RenderScene(m_PeelingLayerShader);
+
+            /// --------------------------------- ----------------------------
+            /// blend peeling back layer
+            /// -------------------------------------------------------------
+
+            glBeginQuery(GL_SAMPLES_PASSED,g_queryId);
+
+            glDrawBuffer(m_Buffers.back());
+            glBlendEquation(GL_FUNC_ADD);
+            glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+            m_BlendBackPeelingBlendShader->Bind();
+            glActiveTexture(GL_TEXTURE0);
+            m_DualBackColorTextures[currentIndex]->Bind();
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+
+            glEndQuery(GL_SAMPLES_PASSED);
+            GLuint sampleCount;
+            glGetQueryObjectuiv(g_queryId,GL_QUERY_RESULT,&sampleCount);
+            if(!sampleCount)
+            {
+                break;
+            }
         }
-
+        /// 合并前向剥离的结果与后向剥离的结果
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glClearBufferfv(GL_COLOR, 0, glm::value_ptr(m_BackgroundColor));
-        m_TriangleShader->Bind();
-        m_DataVertexArray->Bind();
-        m_TriangleShader->setMat4("view",view);
-        m_TriangleShader->setMat4("projection",projection);
-        m_TriangleShader->setMat4("model",glm::mat4(1.0));
-        glDrawElements(GL_TRIANGLES, m_DataVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        glDisable(GL_BLEND);
+        m_PeelingFinalShader->Bind();
+        glActiveTexture(GL_TEXTURE0);
+        m_DualFrontColorTextures[outFrontIndex]->Bind();
+        glActiveTexture(GL_TEXTURE1);
+        m_BlendTexture->Bind();
+        glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    void DualDepthPeelingLayer::OnEvent(Event &event)
+    void DualDepthPeelingLayer::OnEvent(Event& event)
     {
         Layer::OnEvent(event);
     }
