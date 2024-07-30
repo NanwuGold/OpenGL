@@ -8,6 +8,11 @@ namespace OBase
     class ImGuiLayer: public Layer
     {
     public:
+        ImGuiLayer(const ImGuiLayer& other) = default;
+        ImGuiLayer(ImGuiLayer&& other) = default;
+        ImGuiLayer& operator=(const ImGuiLayer& other) = default;
+        ImGuiLayer& operator=(ImGuiLayer&& other) = default;
+
         explicit ImGuiLayer(const std::string & name);
         ~ImGuiLayer() override;
 
@@ -16,8 +21,8 @@ namespace OBase
         void OnUpdate(Timestep ts) override;
         void OnEvent(Event &event) override;
         void OnImGuiRender() override;
-        void Begin();
-        void End();
+        void Begin() const;
+        void End() const;
     };
 
 } // OBase

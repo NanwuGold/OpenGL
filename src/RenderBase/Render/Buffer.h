@@ -202,24 +202,6 @@ namespace OBase
         static Ref<IndexBuffer> Create(uint32_t *indices, uint32_t count);
     };
 
-    class UniformBuffer
-    {
-    public:
-        UniformBuffer() = default;
-        virtual ~UniformBuffer() = default;
-
-        UniformBuffer& operator=(const UniformBuffer&) = delete;
-        UniformBuffer& operator=(UniformBuffer&&) = delete;
-
-        UniformBuffer(UniformBuffer&&) = delete;
-        UniformBuffer(UniformBuffer&) = delete;
-
-        virtual void Bind() = 0;
-        virtual void UnBind() = 0;
-
-        static Ref<UniformBuffer> Create(uint32_t size, uint8_t bindPoint);
-    };
-
 }
 
 #endif //! OPENGL_BUFFER_H_

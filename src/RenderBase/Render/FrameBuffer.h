@@ -19,31 +19,31 @@ enum class FramebufferAttachment: uint32_t
     Depth
 };
 
-
-class FrameBuffer
+namespace OBase
 {
-public:
-    FrameBuffer() = default;
-    virtual ~FrameBuffer() = default;
+    class FrameBuffer
+    {
+    public:
+        FrameBuffer() = default;
+        virtual ~FrameBuffer() = default;
 
-    FrameBuffer(const FrameBuffer&) = delete;
-    FrameBuffer(const FrameBuffer&&) = delete;
+        FrameBuffer(const FrameBuffer&) = default;
+        FrameBuffer(FrameBuffer&&) = delete;
 
-    FrameBuffer& operator=(const FrameBuffer&) = delete;
-    FrameBuffer& operator=(const FrameBuffer&&) = delete;
+        FrameBuffer& operator=(const FrameBuffer&) = default;
+        FrameBuffer& operator=(FrameBuffer&&) = delete;
 
-    virtual void Create(std::vector<OBase::Ref<Texture>> colorAttachments, OBase::Ref<Texture> depth) = 0;
-    virtual void Bind() = 0;
-    virtual void UnBind() = 0;
-    virtual void Resize(int w, int h) = 0;
+        virtual void Create(std::vector<Ref<Texture>> colorAttachments, Ref<Texture> depth) = 0;
+        virtual void Bind() = 0;
+        virtual void UnBind() = 0;
+        virtual void Resize(int w, int h) = 0;
 
-    virtual unsigned int RenderID() = 0;
+        virtual uint32_t RenderID() = 0;
 
-    virtual std::shared_ptr<Texture> GetAttachment(const FramebufferAttachment &index) = 0;
+        virtual std::shared_ptr<Texture> GetAttachment(const FramebufferAttachment& index) = 0;
 
-    static OBase::Ref<FrameBuffer> Create();
-
-};
-
+        static Ref<FrameBuffer> Create();
+    };
+}
 
 #endif //OPENGL_RENDERBASE_FRAMEBUFFER_H

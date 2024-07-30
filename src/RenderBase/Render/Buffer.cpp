@@ -1,7 +1,6 @@
 #include "Buffer.h"
 
 #include <RenderBase/OpenGL/OpenGLBuffer.h>
-#include <RenderBase/OpenGL/OpenGLUniformBuffer.h>
 
 namespace OBase
 {
@@ -20,8 +19,5 @@ namespace OBase
         return std::make_shared<OpenGLIndexBuffer>(indices, count);
     }
 
-    Ref<UniformBuffer> UniformBuffer::Create(uint32_t size, uint8_t bindPoint)
-    {
-        return OBase::CreateRef<OpenGLUniformBuffer>(size,bindPoint);
-    }
+
 }

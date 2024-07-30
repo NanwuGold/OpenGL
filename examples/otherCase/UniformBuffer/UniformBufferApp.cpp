@@ -20,24 +20,19 @@ namespace OBase
              PushLayer(renderLayer);
         }
 
-        ~UniformBufferApp() override;
+        ~UniformBufferApp() override = default;
 
     protected:
-        void OnCloseEvent(const WindowCloseEvent& event) override;
-        void OnResizeEvent(const WindowResizeEvent& event) override;
+        void OnCloseEvent(const WindowCloseEvent& event) override
+        {
+            Application::OnCloseEvent(event);
+        }
+
+        void OnResizeEvent(const WindowResizeEvent& event) override
+        {
+            Application::OnResizeEvent(event);
+        }
     };
-
-    UniformBufferApp::~UniformBufferApp() = default;
-
-    void UniformBufferApp::OnCloseEvent(const WindowCloseEvent& event)
-    {
-        Application::OnCloseEvent(event);
-    }
-
-    void UniformBufferApp::OnResizeEvent(const WindowResizeEvent& event)
-    {
-        Application::OnResizeEvent(event);
-    }
 
     std::unique_ptr<Application> CreateApplication()
     {

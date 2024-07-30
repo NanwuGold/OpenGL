@@ -10,6 +10,7 @@
 namespace OBase
 {
     class VertexArray;
+    class UniformBuffer;
 }
 
 class OpenGLShader;
@@ -40,8 +41,10 @@ namespace OBase
 
     private:
         glm::vec4 m_opaqueBackgroundColor{0.2,0.3,0.4,1.0};
+        glm::vec4 showColor_1{0.0,1.0,0.0,1.0};
         Ref<VertexArray> m_CaseVertexArray;
         Ref<OpenGLShader> m_TriangleShader;
+        Ref<UniformBuffer> m_MatrixUniformBuffer;
         BoundingBox m_box{};
         
     };

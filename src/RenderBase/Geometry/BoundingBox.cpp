@@ -24,14 +24,14 @@ namespace OBase
         auto & maxy = m_Max.y;
         auto & maxz = m_Max.z;
 
-        const auto otherStart = otherBox.m_Min;
         {
+            const auto otherStart = otherBox.m_Min;
             minx = minx < otherStart.x ? minx : otherStart.x;
             miny = miny < otherStart.y ? miny : otherStart.y;
             minz = minz < otherStart.z ? minz : otherStart.z;
         }
-        const auto otherEnd = otherBox.m_Max;
         {
+            const auto otherEnd = otherBox.m_Max;
             maxx = maxx > otherEnd.x ? maxx : otherEnd.x;
             maxy = maxy > otherEnd.y ? maxy : otherEnd.y;
             maxz = maxz > otherEnd.z ? maxz : otherEnd.z;

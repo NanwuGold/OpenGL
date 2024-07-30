@@ -11,7 +11,7 @@ namespace OBase
         OpenGLVertexBuffer() = delete;
 
         explicit OpenGLVertexBuffer(uint32_t size);
-        explicit OpenGLVertexBuffer(float *vertices, uint32_t size);
+        explicit OpenGLVertexBuffer(const float *vertices, uint32_t size);
 
         OpenGLVertexBuffer(const OpenGLVertexBuffer&) = delete;
         OpenGLVertexBuffer(OpenGLVertexBuffer &&) = delete;
@@ -40,12 +40,11 @@ namespace OBase
     class OpenGLIndexBuffer final: public IndexBuffer
     {
     public:
+        OpenGLIndexBuffer(OpenGLIndexBuffer&) = delete;
+        OpenGLIndexBuffer(OpenGLIndexBuffer&&) = delete;
 
-        OpenGLIndexBuffer(OpenGLIndexBuffer&) = default;
-        OpenGLIndexBuffer(OpenGLIndexBuffer&&) = default;
-
-        OpenGLIndexBuffer& operator=(const OpenGLIndexBuffer&) = default;
-        OpenGLIndexBuffer& operator=(OpenGLIndexBuffer&&) = default;
+        OpenGLIndexBuffer& operator=(const OpenGLIndexBuffer&) = delete;
+        OpenGLIndexBuffer& operator=(OpenGLIndexBuffer&&) = delete;
 
         OpenGLIndexBuffer(const uint32_t *indices, uint32_t count);
 

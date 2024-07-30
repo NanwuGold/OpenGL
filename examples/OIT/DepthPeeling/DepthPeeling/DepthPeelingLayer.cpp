@@ -68,7 +68,7 @@ namespace OBase
 
         int windowWidget = static_cast<int>(window.GetWidth());
         int windowHeight = static_cast<int>(window.GetHeight());
-
+         
         m_firstFramebuffer = FrameBuffer::Create();
         {
             auto color = Texture::Create(windowWidget, windowHeight, GL_RGBA8, MultiSample::None);

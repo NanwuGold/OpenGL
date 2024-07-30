@@ -94,7 +94,7 @@ int main()
 
     const auto quadShader = std::make_shared<OpenGLShader>("./Shaders/WA2_quad.vert", "./Shaders/WA2_quad.frag");
 
-    const auto accumFB = FrameBuffer::Create();
+    const auto accumFB = OBase::FrameBuffer::Create();
     {
         auto color1 = Texture::Create(windowPro.width(), windowPro.height(), GL_RGBA32F, MultiSample::None);
         color1->Create();
@@ -111,7 +111,7 @@ int main()
         accumFB->Create({ color1,color2,color3}, depth);
     }
 
-    const auto backgroundFB = FrameBuffer::Create();
+    const auto backgroundFB = OBase::FrameBuffer::Create();
     {
         auto color1 = Texture::Create(windowPro.width(), windowPro.height(), GL_RGBA32F, MultiSample::None);
         color1->Create();
