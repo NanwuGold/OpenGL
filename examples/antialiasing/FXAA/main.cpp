@@ -67,7 +67,7 @@ int main()
         return -1;
     }
 
-    auto context = OBase::CreateRef<OBase::OpenGLContext>(window);
+    const auto context = OBase::CreateRef<OBase::OpenGLContext>(window);
     context->Init();
 
     /// resize event
@@ -96,7 +96,7 @@ int main()
 
         vertexBuffer->Bind();
         {
-            OBase::BufferLayout layout = {
+            const OBase::BufferLayout layout = {
                     { OBase::ShaderDataType::Float3, "a_Position"},
                      {OBase::ShaderDataType::Float4, "a_Color"}
             };
@@ -145,7 +145,7 @@ int main()
     auto color = Texture::Create(FXAA::Window::width(), FXAA::Window::height(),GL_RGBA32F); color->Create();
     const auto depth = Texture::Create(FXAA::Window::width(), FXAA::Window::height(),GL_DEPTH24_STENCIL8); depth->Create();
 
-    const auto fbo = FrameBuffer::Create();
+    const auto fbo = OBase::FrameBuffer::Create();
     fbo->Create({color},depth);
 
     while(!glfwWindowShouldClose(window.get()))

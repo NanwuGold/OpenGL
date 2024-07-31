@@ -84,6 +84,11 @@ namespace OBase
             }
             OBASE_ASSERT(success, "glfw Init Faild!")
             g_SGlfwInitialized = true;
+
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
         }
         m_Window = glfwCreateWindow(props.width(), props.height(), props.m_Title.c_str(), nullptr, nullptr);
 
@@ -96,7 +101,7 @@ namespace OBase
 
         /// init event callback
         glfwSetWindowSizeCallback(m_Window, [](GLFWwindow *window, int w, int h) {
-                                      auto data = static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+                                      const auto data = static_cast<WindowData *>(glfwGetWindowUserPointer(window));
                                       data->m_Width = w;
                                       data->m_Height = h;
 

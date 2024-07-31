@@ -4,16 +4,21 @@
 #include <memory>
 #include <RenderBase/Render/Context.h>
 
-
 struct GLFWwindow;
 
 namespace OBase
 {
-    class OpenGLContext : public Context
+    class OpenGLContext final: public Context
     {
     public:
         explicit OpenGLContext(std::shared_ptr<GLFWwindow> window);
         ~OpenGLContext() override;
+
+        OpenGLContext(const OpenGLContext&) = delete;
+        OpenGLContext(OpenGLContext&&) = delete;
+
+        OpenGLContext& operator=(const OpenGLContext&) = delete;
+        OpenGLContext& operator=(OpenGLContext&&) = delete;
 
         void Init() override;
 

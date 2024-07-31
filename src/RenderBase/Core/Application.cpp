@@ -1,12 +1,9 @@
 #include "Application.h"
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#include <RenderBase/pointer_ptr.hpp>
 #include <RenderBase/Event/ApplicationEvent.h>
 #include <RenderBase/Event/Event.h>
-
-#include <RenderBase/pointer_ptr.hpp>
 
 namespace OBase
 {

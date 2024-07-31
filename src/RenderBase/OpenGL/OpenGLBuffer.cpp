@@ -7,7 +7,7 @@ namespace OBase
     // VertexBuffer /////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
 
-    OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
+    OpenGLVertexBuffer::OpenGLVertexBuffer(const uint32_t size)
         : m_RendererID(0)
     {
         glCreateBuffers(1, &m_RendererID);
@@ -15,7 +15,7 @@ namespace OBase
         glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
     }
 
-    OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
+    OpenGLVertexBuffer::OpenGLVertexBuffer(const float* vertices, const uint32_t size)
         : m_RendererID(0)
     {
         glCreateBuffers(1, &m_RendererID);
@@ -48,7 +48,7 @@ namespace OBase
         return m_Layout;
     }
 
-    void OpenGLVertexBuffer::SetDate(void* data, uint32_t size)
+    void OpenGLVertexBuffer::SetDate(void* data, const uint32_t size)
     {
         /// TODO : need update
         glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);

@@ -21,13 +21,13 @@ namespace OBase
         LayerStack();
         ~LayerStack();
 
-        [[maybe_unused]] void PushLayer(const Ref<Layer> &layer);
+        void PushLayer(const Ref<Layer> &layer);
 
-        [[maybe_unused]] void PushOverlay(const Ref<Layer> &layer);
+        void PushOverlay(const Ref<Layer> &layer);
 
-        [[maybe_unused]] void PopLayer(const Ref<Layer> &layer);
+        void PopLayer(const Ref<Layer> &layer);
 
-        [[maybe_unused]] void PopOverlay(const Ref<Layer> &layer);
+        void PopOverlay(const Ref<Layer> &layer);
 
         std::vector<Ref<Layer>>::iterator begin()
         { return m_Layers.begin(); }

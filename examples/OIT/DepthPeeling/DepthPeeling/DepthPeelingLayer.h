@@ -8,6 +8,8 @@
 
 #include <glm/glm.hpp>
 
+#include "RenderBase/Render/FrameBuffer.h"
+
 class OpenGLShader;
 class FrameBuffer;
 
