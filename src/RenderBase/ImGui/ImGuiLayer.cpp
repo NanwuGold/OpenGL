@@ -15,10 +15,7 @@ namespace OBase
 
     }
 
-    ImGuiLayer::~ImGuiLayer()
-    {
-
-    }
+    ImGuiLayer::~ImGuiLayer() = default;
 
     void ImGuiLayer::OnAttach()
     {
@@ -33,7 +30,7 @@ namespace OBase
         ImGui::StyleColorsDark();
 
         const auto & app = Application::Get();
-        auto window = reinterpret_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
+        const auto window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
         ImGui_ImplGlfw_InitForOpenGL(window,true);
         ImGui_ImplOpenGL3_Init("#version 460");
@@ -62,7 +59,7 @@ namespace OBase
         Layer::OnImGuiRender();
     }
 
-    void ImGuiLayer::Begin()
+    void ImGuiLayer::Begin() const
     {
         assert(this);
         ImGui_ImplOpenGL3_NewFrame();
@@ -70,13 +67,13 @@ namespace OBase
         ImGui::NewFrame();
     }
 
-    void ImGuiLayer::End()
+    void ImGuiLayer::End() const
     {
         assert(this);
         ImGuiIO &io = ImGui::GetIO();
         const Application & app = Application::Get();
         const auto &window = app.GetWindow();
-        io.DisplaySize = ImVec2(window.GetWidth(), window.GetHeight());
+        io.DisplaySize = ImVec2(static_cast<float>(window.GetWidth()), static_cast<float>(window.GetHeight()));
 
         // Rendering
         ImGui::Render();

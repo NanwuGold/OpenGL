@@ -6,9 +6,15 @@
 
 namespace OBase
 {
-    class OpenGLVertexArray : public VertexArray
+    class OpenGLVertexArray final: public VertexArray
     {
     public:
+        OpenGLVertexArray(const OpenGLVertexArray& other) = delete;
+        OpenGLVertexArray(OpenGLVertexArray&& other) = delete;
+
+        OpenGLVertexArray& operator=(const OpenGLVertexArray& other) = delete;
+        OpenGLVertexArray& operator=(OpenGLVertexArray&& other) = delete;
+
         OpenGLVertexArray();
 
         ~OpenGLVertexArray() override;
@@ -28,8 +34,6 @@ namespace OBase
     private:
         std::vector<Ref<VertexBuffer>> m_VertexBuffers;
         Ref<IndexBuffer> m_IndexBuffer;
-
-    private:
         uint32_t m_RendererID;
     };
 }

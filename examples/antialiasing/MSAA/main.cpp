@@ -100,6 +100,9 @@ int main()
     const auto multiDepthTexture = Texture::Create(MSAA::Window::width(), MSAA::Window::height(), GL_DEPTH24_STENCIL8,sample);
     multiDepthTexture->Create();
 
+
+    using OBase::FrameBuffer;
+
     const auto multiFbo = FrameBuffer::Create();
     multiFbo->Create({ multiColorTexture }, multiDepthTexture);
 

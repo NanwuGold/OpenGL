@@ -39,3 +39,4 @@ cmake-build-debug/
 build/
 Folder.DotSettings
 Folder.DotSettings.user
+.vscode

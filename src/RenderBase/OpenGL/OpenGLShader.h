@@ -41,7 +41,7 @@ public:
     [[maybe_unused]]  void setMat4(const std::string& name, const glm::mat4 &value) const;
 
 private:
-    static void checkCompileErrors(unsigned int shader, shaderType type);
+    static void checkCompileErrors(unsigned int shader, ShaderType type);
 
 };
 

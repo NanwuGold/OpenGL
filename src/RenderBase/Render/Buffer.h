@@ -157,7 +157,14 @@ namespace OBase
     class VertexBuffer
     {
     public:
+        VertexBuffer() = default;
         virtual ~VertexBuffer() = default;
+
+        VertexBuffer& operator=(const VertexBuffer&) = delete;
+        VertexBuffer& operator=(VertexBuffer&&) = delete;
+
+        VertexBuffer(VertexBuffer&&) = delete;
+        VertexBuffer(VertexBuffer&) = delete;
 
         virtual void Bind() const = 0;
 
@@ -177,7 +184,14 @@ namespace OBase
     class IndexBuffer
     {
     public:
+        IndexBuffer() = default;
         virtual ~IndexBuffer() = default;
+
+        IndexBuffer& operator=(const IndexBuffer&) = delete;
+        IndexBuffer& operator=(IndexBuffer&&) = delete;
+
+        IndexBuffer(IndexBuffer&&) = delete;
+        IndexBuffer(IndexBuffer&) = delete;
 
         virtual void Bind() const = 0;
 
@@ -187,6 +201,7 @@ namespace OBase
 
         static Ref<IndexBuffer> Create(uint32_t *indices, uint32_t count);
     };
+
 }
 
 #endif //! OPENGL_BUFFER_H_

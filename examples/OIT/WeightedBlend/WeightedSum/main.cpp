@@ -97,8 +97,8 @@ int main()
 
     auto depth = Texture::Create(windowPro.width(),windowPro.height(),GL_DEPTH32F_STENCIL8,MultiSample::None);
     depth->Create();
-
-    auto accumeBuffer = FrameBuffer::Create();
+    using OBase::FrameBuffer;
+    auto accumeBuffer = OBase::FrameBuffer::Create();
     accumeBuffer->Create({color},depth);
 
 
