@@ -30,6 +30,7 @@ public:
     virtual ~Texture() = default;
 
     virtual void Bind() = 0;
+    virtual void UnBind() = 0;
     virtual void resize(int w,int h) = 0;
     virtual void Create() = 0;
     virtual void Invalidate() = 0;
@@ -38,6 +39,8 @@ public:
     virtual unsigned int RenderID() = 0;
 
     virtual bool multiSampleFlag() = 0;
+
+    virtual void Clear(GLint level = 0, const void* data = nullptr) = 0;
 
     static OBase::Ref<Texture> Create(int w, int h, GLenum format, MultiSample sample = MultiSample::None);
 };

@@ -7,6 +7,8 @@
 
 #include <glm/glm.hpp>
 
+#include "RenderBase/Render/Texture.h"
+
 namespace OBase
 {
     class VertexArray;
@@ -39,6 +41,7 @@ namespace OBase
     protected:
         void Init();
         void Destory();
+        void InitLinkedListRes();
 
         void OnResizeEvent(const Event &event);
     private:
@@ -47,8 +50,12 @@ namespace OBase
         Ref<VertexArray> m_CaseVertexArray;
         Ref<OpenGLShader> m_TriangleShader;
         Ref<UniformBuffer> m_MatrixUniformBuffer;
-        Ref<ShaderStorageBuffer> m_ShaderStorageBufferBuffer;
         BoundingBox m_box{};
+
+        Ref<Texture> m_HeadPointTexture;   ///< 链表头节点指针缓冲
+        Ref<ShaderStorageBuffer> m_LinkedNodeBuffer;   ///< 链表节点缓冲
+        uint32_t m_AtomicCounterBuffer{0};
+
     };
 
 }

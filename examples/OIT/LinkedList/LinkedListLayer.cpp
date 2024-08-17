@@ -16,6 +16,9 @@
 
 #include <iostream>
 
+
+constexpr uint8_t MaxFragments = 10;
+
 namespace OBase
 {
     void LinkedListLayer::OnEvent(Event &event)
@@ -71,17 +74,12 @@ namespace OBase
         ImGui::Begin("Settings panel");
         ImGui::ColorEdit4("backgroundColor", glm::value_ptr(m_opaqueBackgroundColor), ImGuiColorEditFlags_NoAlpha);
         ImGui::ColorEdit4("showColor1", glm::value_ptr(showColor_1), ImGuiColorEditFlags_NoAlpha);
-
-        m_ShaderStorageBufferBuffer->Bind();
-        m_ShaderStorageBufferBuffer->UpdateData(0, sizeof(showColor_1), glm::value_ptr(showColor_1));
-        m_ShaderStorageBufferBuffer->UnBind();
-
         ImGui::End();
     }
 
     void LinkedListLayer::Init()
     {
-        m_TriangleShader = CreateRef<OpenGLShader>("./Shaders/case_triangle.vert", "./Shaders/case_triangle.frag");
+        m_TriangleShader = CreateRef<OpenGLShader>("./Shaders/LL_triangle.vert", "./Shaders/LL_triangle.frag");
         m_box = BoundingBox(glm::dvec3(-2),glm::dvec3(2));
 
         m_CaseVertexArray = VertexArray::Create();
@@ -112,8 +110,6 @@ namespace OBase
 
             m_CaseVertexArray->SetIndexBuffer(indexBuffer);
         }
-        // const auto &window = OBase::Application::Get().GetWindow();
-
         const UniformLayout layout = {
                         {ElementDataType::Matrix, "viewMat"},
                         {ElementDataType::Vec4, "Color"},
@@ -135,35 +131,68 @@ namespace OBase
         m_MatrixUniformBuffer->UpdateElementData("Color", glm::value_ptr(glm::vec4(1.0, 0.0, 0.0, 1.0)));
         m_MatrixUniformBuffer->UnBind();
 
+        glCreateBuffers(1, &m_AtomicCounterBuffer);
+        glNamedBufferData(m_AtomicCounterBuffer, sizeof(GLuint), nullptr, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+        glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, m_AtomicCounterBuffer);
 
-#if _DEBUG
-        float data[1024];
-        for (int i = 0; i < 1024; ++i) 
-        {
-            data[i] = 0.0;
-        }
-
-        data[0] = 1.0;
-
-        m_ShaderStorageBufferBuffer = ShaderStorageBuffer::Create(sizeof(float) * 1024);
-        m_ShaderStorageBufferBuffer->ReLinkBindingPoint(1);
-        m_ShaderStorageBufferBuffer->Bind();
-        m_ShaderStorageBufferBuffer->UpdateData(0, sizeof(float) * 4, data);
-        m_ShaderStorageBufferBuffer->UnBind();
-#endif 
-
+        InitLinkedListRes();
     }
 
     void LinkedListLayer::Destory()
     {
         m_CaseVertexArray.reset();
         m_TriangleShader.reset();
-        m_ShaderStorageBufferBuffer.reset();
+        m_LinkedNodeBuffer.reset();
         m_MatrixUniformBuffer.reset();
+        m_HeadPointTexture.reset();
+        m_LinkedNodeBuffer.reset();
+
+        if(glIsBuffer(m_AtomicCounterBuffer))
+        {
+            glDeleteBuffers(1, &m_AtomicCounterBuffer);
+        }
+    }
+
+    void LinkedListLayer::InitLinkedListRes()
+    {
+        m_HeadPointTexture.reset();
+        m_LinkedNodeBuffer.reset();
+
+        if (glIsBuffer(m_AtomicCounterBuffer))
+        {
+            glDeleteBuffers(1, &m_AtomicCounterBuffer);
+        }
+
+        /// init 
+        const auto & currentWindow = Application::Get().GetWindow();
+        const auto windowW = currentWindow.GetWidth();
+        const auto windowH = currentWindow.GetHeight();
+
+        const auto maxNodeCounts = windowW * windowH * MaxFragments;
+
+        struct Node
+        {
+            glm::vec4 m_Color; /// fragment color
+            float m_Depth;     /// fragment depth
+            uint32_t m_Next;    /// fragment pointer
+        };
+
+        m_LinkedNodeBuffer = ShaderStorageBuffer::Create(sizeof(Node) * maxNodeCounts);
+        m_LinkedNodeBuffer->ReLinkBindingPoint(1);
+
+        m_HeadPointTexture = Texture::Create(static_cast<int>(windowW), static_cast<int>(windowH), 
+            GL_RED_INTEGER, MultiSample::None);
+        m_HeadPointTexture->Create();
+
+        m_HeadPointTexture->Bind();
+        m_HeadPointTexture->Clear(0, nullptr);
+        m_HeadPointTexture->UnBind();
     }
 
     void LinkedListLayer::OnResizeEvent(const Event &event)
     {
         OBASE_INFO(event)
+        InitLinkedListRes();
     }
 } // OBase

@@ -1,5 +1,40 @@
 #include "OpenGLTexture.h"
 
+#include <iostream>
+
+
+namespace 
+{
+    GLenum GetClearTexImageType(const GLenum format)
+    {
+        switch (format) {
+        case GL_RGBA8:
+        case GL_RGB8:
+        case GL_RED:
+        case GL_RED_INTEGER:
+        case GL_RG:
+            return GL_UNSIGNED_BYTE;
+        case GL_RGBA16F:
+        case GL_RGB16F:
+        case GL_R16F:
+            return GL_HALF_FLOAT;
+        case GL_RGBA32F:
+        case GL_RGB32F:
+        case GL_R32F:
+            // return GL_FLOAT;
+        case GL_DEPTH_COMPONENT24:
+        case GL_DEPTH_COMPONENT32F:
+            return GL_FLOAT;
+        case GL_DEPTH_COMPONENT16:
+            return GL_UNSIGNED_SHORT;
+        case GL_DEPTH24_STENCIL8:
+        case GL_DEPTH32F_STENCIL8:
+            throw std::invalid_argument("Depth-stencil formats are not supported for clear type.");
+        default:
+            throw std::invalid_argument("Unsupported internal format.");
+        }
+    }
+}
 
 
 OpenGLTexture::OpenGLTexture(int w, int h, GLenum format)
@@ -13,6 +48,11 @@ OpenGLTexture::OpenGLTexture(int w, int h, GLenum format)
 void OpenGLTexture::Bind()
 {
     glBindTexture(GL_TEXTURE_2D,m_TextureID);
+}
+
+void OpenGLTexture::UnBind()
+{
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void OpenGLTexture::resize(int w, int h)
@@ -60,6 +100,18 @@ bool OpenGLTexture::multiSampleFlag()
     return false;
 }
 
+void OpenGLTexture::Clear(const GLint level, const void* data)
+{
+    if(glClearTexImage)
+    {
+        glClearTexImage(m_TextureID, level, m_Format, GetClearTexImageType(format()), data);
+    }
+    else
+    {
+        /// do nothing!!!
+    }
+}
+
 OpenGLTexture::~OpenGLTexture()
 {
     if (m_TextureID != 0)
@@ -90,6 +142,11 @@ OpenGLMultiSampleTexture::~OpenGLMultiSampleTexture()
 void OpenGLMultiSampleTexture::Bind()
 {
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_TextureID);
+}
+
+void OpenGLMultiSampleTexture::UnBind()
+{
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 }
 
 void OpenGLMultiSampleTexture::resize(const int w, const int h)
@@ -130,6 +187,14 @@ unsigned OpenGLMultiSampleTexture::RenderID()
 bool OpenGLMultiSampleTexture::multiSampleFlag()
 {
     return true;
+}
+
+void OpenGLMultiSampleTexture::Clear(const GLint level, const void* data)
+{
+    if(glClearTexImage)
+    {
+        glClearTexImage(m_TextureID, level, m_Format, GetClearTexImageType(format()), data);
+    }
 }
 
 

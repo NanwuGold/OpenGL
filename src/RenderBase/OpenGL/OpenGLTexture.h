@@ -6,7 +6,6 @@
 class OpenGLTexture final : public Texture
 {
 public:
-
     ~OpenGLTexture() override;
 
     OpenGLTexture(int w, int h, GLenum format);
@@ -18,6 +17,8 @@ public:
     OpenGLTexture& operator=(OpenGLTexture&) = delete;
 
     void Bind() override;
+
+    void UnBind() override;
 
     void resize(int w, int h) override;
 
@@ -31,6 +32,7 @@ public:
 
     bool multiSampleFlag() override;
 
+    void Clear(GLint level, const void* data) override;
 
 private:
     unsigned int m_TextureID;
@@ -54,6 +56,7 @@ public:
     ~OpenGLMultiSampleTexture() override;
 
     void Bind() override;
+    void UnBind() override;
     void resize(int w, int h) override;
     void Create() override;
     void Invalidate() override;
@@ -61,6 +64,8 @@ public:
     unsigned RenderID() override;
 
     bool multiSampleFlag() override;
+
+    void Clear(GLint level, const void* data) override;
 
 private:
     unsigned int m_TextureID;

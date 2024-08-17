@@ -1,10 +1,13 @@
 #version 450 core
 layout(location = 0) in vec3 aPos;
+
+#if 0
 layout(location = 1) in vec4 aColor;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 project;
+#endif
 
 /// OpenGL4.2 版本起 可以显示写入着色器的绑定点
 layout(std140, binding = 0) uniform Matrix
@@ -15,15 +18,13 @@ layout(std140, binding = 0) uniform Matrix
 };
 
 
-out vec4 vColor;
+// out vec4 vColor;
 
 void main()
 {
     gl_Position = projectMat * viewMat * model * vec4(aPos, 1.0);
-    // gl_Position = project * view * model * vec4(aPos, 1.0);
-    // gl_Position = model * vec4(aPos, 1.0);
-    vColor = aColor;
-    vColor = color;
+    // vColor = aColor;
+    //vColor = color;
 }
 
 
