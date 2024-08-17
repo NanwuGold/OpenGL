@@ -9,6 +9,13 @@ namespace OBase
                   << " type = " << type
                   << ", severity = " << severity
                   << ", message = " << message << std::endl;
+
+
+        if(outFunc)
+        {
+            outFunc(source, type, id, severity, length, message, userParam);
+        }
+
     }
 
     void OpenGLDebugger::EnableDebug()

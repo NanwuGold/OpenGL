@@ -1,22 +1,32 @@
 #include "ShaderStorageBufferLayer.h"
 
 #include <glad/glad.h>
+#include <imgui.h>
 #include <glm/gtc/type_ptr.hpp>
+
 #include <RenderBase/Camera/CameraFunc.h>
 #include <RenderBase/Core/Application.h>
+#include <RenderBase/Core/Core.h>
 #include <RenderBase/OpenGL/OpenGLShader.h>
 #include <RenderBase/Render/Buffer.h>
 #include <RenderBase/Render/UniformBuffer.h>
 #include <RenderBase/OpenGL/OpenGLShaderStorageBuffer.h>
 #include <RenderBase/Render/VertexArray.h>
+#include <RenderBase/Event/ApplicationEvent.h>
 
-#include <imgui.h>
+#include <iostream>
 
 namespace OBase
 {
     void ShaderStorageBufferLayer::OnEvent(Event &event)
     {
-        Layer::OnEvent(event);
+        EventDispatcher dispatcher(event);
+        dispatcher.Dispatch<WindowResizeEvent>([this](auto && event)
+                                               {
+                                                   OnResizeEvent(std::forward<decltype(event)>(event));
+                                                   return false;
+                                               });
+
     }
 
     ShaderStorageBufferLayer::ShaderStorageBufferLayer(const std::string &name)
@@ -54,7 +64,6 @@ namespace OBase
         m_CaseVertexArray->Bind();
 
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_CaseVertexArray->GetIndexBuffer()->GetCount()), GL_UNSIGNED_INT, nullptr);
-
     }
 
     void ShaderStorageBufferLayer::OnImGuiRender()
@@ -62,6 +71,11 @@ namespace OBase
         ImGui::Begin("Settings panel");
         ImGui::ColorEdit4("backgroundColor", glm::value_ptr(m_opaqueBackgroundColor), ImGuiColorEditFlags_NoAlpha);
         ImGui::ColorEdit4("showColor1", glm::value_ptr(showColor_1), ImGuiColorEditFlags_NoAlpha);
+
+        m_ShaderStorageBufferBuffer->Bind();
+        m_ShaderStorageBufferBuffer->UpdateData(0, sizeof(showColor_1), glm::value_ptr(showColor_1));
+        m_ShaderStorageBufferBuffer->UnBind();
+
         ImGui::End();
     }
 
@@ -122,18 +136,21 @@ namespace OBase
         m_MatrixUniformBuffer->UnBind();
 
 
+#if _DEBUG
         float data[1024];
-        for (int i = 0; i < 1024; ++i) {
+        for (int i = 0; i < 1024; ++i) 
+        {
             data[i] = 0.0;
         }
 
         data[0] = 1.0;
 
         m_ShaderStorageBufferBuffer = ShaderStorageBuffer::Create(sizeof(float) * 1024);
-        m_ShaderStorageBufferBuffer->LinkBindingPoint(1);
+        m_ShaderStorageBufferBuffer->ReLinkBindingPoint(1);
         m_ShaderStorageBufferBuffer->Bind();
         m_ShaderStorageBufferBuffer->UpdateData(0, sizeof(float) * 4, data);
         m_ShaderStorageBufferBuffer->UnBind();
+#endif 
 
     }
 
@@ -143,5 +160,10 @@ namespace OBase
         m_TriangleShader.reset();
         m_ShaderStorageBufferBuffer.reset();
         m_MatrixUniformBuffer.reset();
+    }
+
+    void ShaderStorageBufferLayer::OnResizeEvent(const Event &event)
+    {
+        OBASE_INFO(event)
     }
 } // OBase

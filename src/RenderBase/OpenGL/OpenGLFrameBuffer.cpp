@@ -39,6 +39,15 @@ namespace OBase
 
     void OpenGLFrameBuffer::Resize(int w, int h)
     {
+        for(const auto & color: m_colorAttachments)
+        {
+            color->resize(w, h);
+        }
+        if (m_depthAttachment)
+        {
+            m_depthAttachment->resize(w, h);
+        }
+        Invalidate();
     }
 
     void OpenGLFrameBuffer::Invalidate()

@@ -28,18 +28,19 @@ namespace OBase
         ShaderStorageBufferLayer& operator=(ShaderStorageBufferLayer&) = delete;
         ShaderStorageBufferLayer& operator=(const ShaderStorageBufferLayer&&) = delete;
 
-        void OnEvent(Event& event) override;
-
         ~ShaderStorageBufferLayer() override;
         void OnAttach() override;
         void OnDetach() override;
         void OnUpdate(Timestep ts) override;
         void OnImGuiRender() override;
 
+        void OnEvent(Event& event) override;
+
     protected:
         void Init();
         void Destory();
 
+        void OnResizeEvent(const Event &event);
     private:
         glm::vec4 m_opaqueBackgroundColor{0.2,0.3,0.4,1.0};
         glm::vec4 showColor_1{0.0,1.0,0.0,1.0};
@@ -48,7 +49,6 @@ namespace OBase
         Ref<UniformBuffer> m_MatrixUniformBuffer;
         Ref<ShaderStorageBuffer> m_ShaderStorageBufferBuffer;
         BoundingBox m_box{};
-        
     };
 
 }

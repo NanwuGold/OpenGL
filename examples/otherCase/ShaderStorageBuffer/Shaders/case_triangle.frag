@@ -4,7 +4,7 @@ out vec4 FragColor;
 in vec4 vColor;
 uniform vec4 uColor;
 
-layout(std430, binding=1) buffer testSSBOBuffer
+layout(std430, binding = 1) buffer testSSBOBuffer
 {
     float data[];
 };
@@ -12,5 +12,5 @@ layout(std430, binding=1) buffer testSSBOBuffer
 void main()
 {
     // FragColor = vColor;
-    FragColor = vec4(data[0],0.,0.,1.0);
+    FragColor = vec4(data[0], data[1], data[2],1.0);
 }

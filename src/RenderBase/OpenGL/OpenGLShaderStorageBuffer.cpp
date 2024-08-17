@@ -7,7 +7,7 @@ namespace OBase
 {
     Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(uint32_t size)
     {
-        return OBase::CreateRef<OpenGLShaderStorageBuffer>(size);
+        return OBase::CreateRef<OpenGLShaderStorageBuffer>(size, 0);
     }
 
     void OpenGLShaderStorageBuffer::Bind() const
@@ -20,7 +20,7 @@ namespace OBase
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     }
 
-    void OpenGLShaderStorageBuffer::LinkBindingPoint(const uint8_t bindPoint)
+    void OpenGLShaderStorageBuffer::ReLinkBindingPoint(const uint8_t bindPoint)
     {
         m_BindPoint = bindPoint;
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_BindPoint, m_RenderID);
@@ -36,16 +36,14 @@ namespace OBase
         return m_RenderID;
     }
 
-    void OpenGLShaderStorageBuffer::UpdateData(const uint32_t offset, const uint32_t size, const void* data)
+    void OpenGLShaderStorageBuffer::UpdateData(const uint32_t offset, const uint32_t size, const void *data)
     {
-        assert(offset + size < m_Size + 1 && "Update range exceeds buffer size!");
+        assert(offset + size <= m_Size && "Update range exceeds buffer size!");
         glNamedBufferSubData(m_RenderID, offset, size, data);
     }
 
-    OpenGLShaderStorageBuffer::OpenGLShaderStorageBuffer(const uint32_t size)
-        : m_Size(size)
-        , m_RenderID(0)
-        , m_BindPoint(0)
+    OpenGLShaderStorageBuffer::OpenGLShaderStorageBuffer(const uint32_t size, uint8_t bindPoint)
+        : m_Size(size), m_RenderID(0), m_BindPoint(bindPoint)
     {
         Invalidate();
     }
@@ -61,16 +59,13 @@ namespace OBase
 
     void OpenGLShaderStorageBuffer::Invalidate()
     {
-        if(glIsBuffer(m_RenderID))
+        if (glIsBuffer(m_RenderID))
         {
             glDeleteBuffers(1, &m_RenderID);
         }
         glCreateBuffers(1, &m_RenderID);
         glNamedBufferData(m_RenderID, m_Size, nullptr, GL_DYNAMIC_DRAW);
 
-        // TODO: check error
-
-        LinkBindingPoint(0);  ///< 绑定到默认的绑定点 0
-
+        ReLinkBindingPoint(0); ///< 绑定到默认的绑定点 0
     }
 }
