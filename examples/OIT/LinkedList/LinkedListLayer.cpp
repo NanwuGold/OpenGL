@@ -56,12 +56,7 @@ namespace OBase
     {
         glClearBufferfv(GL_COLOR, 0, glm::value_ptr(m_opaqueBackgroundColor));
 
-        m_MatrixUniformBuffer->Bind();
-        m_MatrixUniformBuffer->UpdateElementData("Color", glm::value_ptr(showColor_1));
-        m_MatrixUniformBuffer->UnBind();
-
         m_TriangleShader->Bind();
-
         constexpr glm::mat4 model(1.0);
         m_TriangleShader->setMat4("model", model);
         m_CaseVertexArray->Bind();
@@ -75,6 +70,11 @@ namespace OBase
         ImGui::ColorEdit4("backgroundColor", glm::value_ptr(m_opaqueBackgroundColor), ImGuiColorEditFlags_NoAlpha);
         ImGui::ColorEdit4("showColor1", glm::value_ptr(showColor_1), ImGuiColorEditFlags_NoAlpha);
         ImGui::End();
+
+        m_MatrixUniformBuffer->Bind();
+        m_MatrixUniformBuffer->UpdateElementData("Color", glm::value_ptr(showColor_1));
+        m_MatrixUniformBuffer->UnBind();
+
     }
 
     void LinkedListLayer::Init()

@@ -41,7 +41,10 @@ namespace OBase
                
         }
 
-        
+        static void DisableDebug();
+
+    private:
+        static bool m_EnableDebug;
 
     };
 

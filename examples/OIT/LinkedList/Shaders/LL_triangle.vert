@@ -9,6 +9,8 @@ uniform mat4 view;
 uniform mat4 project;
 #endif
 
+uniform mat4 model;
+
 /// OpenGL4.2 版本起 可以显示写入着色器的绑定点
 layout(std140, binding = 0) uniform Matrix
 {

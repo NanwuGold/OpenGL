@@ -11,15 +11,15 @@ layout(std140, binding = 0) uniform Matrix
     mat4 projectMat;
 };
 
+struct Node
+{
+    vec4 color;
+    float depth;
+    uint next;
+};
+
 layout(std430, binding = 1) buffer testSSBOBuffer
 {
-    struct Node
-    {
-        vec4 color;
-        float depth;
-        uint next;
-    };
-
     Node nodes[];
 };
 
