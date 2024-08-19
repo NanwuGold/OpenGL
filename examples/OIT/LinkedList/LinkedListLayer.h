@@ -49,6 +49,7 @@ namespace OBase
         glm::vec4 showColor_1{0.0,1.0,0.0,1.0};
         Ref<VertexArray> m_CaseVertexArray;
         Ref<OpenGLShader> m_TriangleShader;
+        Ref<OpenGLShader> m_Render2ScreenShader;
         Ref<UniformBuffer> m_MatrixUniformBuffer;
         BoundingBox m_box{};
 

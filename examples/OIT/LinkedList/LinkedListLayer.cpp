@@ -17,7 +17,7 @@
 #include <iostream>
 
 
-constexpr uint8_t MaxFragments = 10;
+constexpr uint8_t MaxFragments = 3;
 
 namespace OBase
 {
@@ -62,6 +62,13 @@ namespace OBase
         m_CaseVertexArray->Bind();
 
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_CaseVertexArray->GetIndexBuffer()->GetCount()), GL_UNSIGNED_INT, nullptr);
+
+
+        m_Render2ScreenShader->Bind();
+        glActiveTexture(GL_TEXTURE2);
+        m_HeadPointTexture->Bind();
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
     }
 
     void LinkedListLayer::OnImGuiRender()
@@ -80,6 +87,8 @@ namespace OBase
     void LinkedListLayer::Init()
     {
         m_TriangleShader = CreateRef<OpenGLShader>("./Shaders/LL_triangle.vert", "./Shaders/LL_triangle.frag");
+        m_Render2ScreenShader = CreateRef<OpenGLShader>("./Shaders/LL_renderScreen.vert", "./Shaders/LL_renderScreen.frag");
+
         m_box = BoundingBox(glm::dvec3(-2),glm::dvec3(2));
 
         m_CaseVertexArray = VertexArray::Create();
