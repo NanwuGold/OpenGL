@@ -14,6 +14,8 @@ namespace
         case GL_RED_INTEGER:
         case GL_RG:
             return GL_UNSIGNED_BYTE;
+        case GL_R32UI:
+            return GL_UNSIGNED_INT;
         case GL_RGBA16F:
         case GL_RGB16F:
         case GL_R16F:
@@ -104,7 +106,8 @@ void OpenGLTexture::Clear(const GLint level, const void* data)
 {
     if(glClearTexImage)
     {
-        glClearTexImage(m_TextureID, level, m_Format, GetClearTexImageType(format()), data);
+        /// TODO: 处理清空数据类型
+        glClearTexImage(m_TextureID, level, GL_RED_INTEGER, GetClearTexImageType(format()), data);
     }
     else
     {

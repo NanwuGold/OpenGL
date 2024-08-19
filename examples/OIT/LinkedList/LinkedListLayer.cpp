@@ -56,6 +56,11 @@ namespace OBase
     {
         glClearBufferfv(GL_COLOR, 0, glm::value_ptr(m_opaqueBackgroundColor));
 
+        m_HeadPointTexture->Bind();
+        GLuint clearVal = 0xFFFFFFFF;
+        m_HeadPointTexture->Clear(0, &clearVal);
+        m_HeadPointTexture->UnBind();
+
         m_TriangleShader->Bind();
         constexpr glm::mat4 model(1.0);
         m_TriangleShader->setMat4("model", model);
@@ -63,12 +68,8 @@ namespace OBase
 
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_CaseVertexArray->GetIndexBuffer()->GetCount()), GL_UNSIGNED_INT, nullptr);
 
-
-        m_Render2ScreenShader->Bind();
-        glActiveTexture(GL_TEXTURE2);
-        m_HeadPointTexture->Bind();
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-
+         m_Render2ScreenShader->Bind();
+         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
     void LinkedListLayer::OnImGuiRender()
@@ -191,11 +192,11 @@ namespace OBase
         m_LinkedNodeBuffer->ReLinkBindingPoint(1);
 
         m_HeadPointTexture = Texture::Create(static_cast<int>(windowW), static_cast<int>(windowH), 
-            GL_RED_INTEGER, MultiSample::None);
+            GL_R32UI, MultiSample::None);
         m_HeadPointTexture->Create();
 
         m_HeadPointTexture->Bind();
-        m_HeadPointTexture->Clear(0, nullptr);
+        glBindImageTexture(2, m_HeadPointTexture->RenderID(), 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32UI);  ///< 绑定到绑定点
         m_HeadPointTexture->UnBind();
     }
 

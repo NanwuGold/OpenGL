@@ -7,17 +7,14 @@ struct Node
     uint next;
 };
 
-
 layout(binding = 2, r32ui) uniform uimage2D headPointerImage;
 layout(std430, binding = 1) buffer NodeBuffer
 {
     Node nodes[];
 };
 
-
 out vec4 vFragColor;
 in vec2 vTexCoord;
-
 
 void main()
 {
@@ -26,7 +23,6 @@ void main()
 
     vec4 color = vec4(0.0);
     float alphaSum = 0.0;
-
     while(head != 0xffffffff)
     {
         Node node = nodes[head];
