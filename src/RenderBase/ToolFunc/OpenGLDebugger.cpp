@@ -29,6 +29,7 @@ namespace OBase
             glEnable(GL_DEBUG_OUTPUT);
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
             glDebugMessageCallback(DebugCallback, nullptr);
+            m_EnableDebug = true;
         }
 #endif
     }
@@ -36,7 +37,7 @@ namespace OBase
     void OpenGLDebugger::DisableDebug()
     {
 #if _DEBUG
-        if (m_EnableDebug)
+        if (!m_EnableDebug)
         {
             return;
         }
@@ -44,6 +45,7 @@ namespace OBase
         glDisable(GL_DEBUG_OUTPUT);
         glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(nullptr, nullptr);
+        m_EnableDebug = false;
 #endif
     }
 } // OBase

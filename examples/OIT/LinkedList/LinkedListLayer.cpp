@@ -16,8 +16,10 @@
 
 #include <iostream>
 
+#include "RenderBase/ToolFunc/OpenGLDebugger.h"
 
-constexpr uint8_t MaxFragments = 3;
+
+constexpr uint8_t MaxFragments = 10;
 
 namespace OBase
 {
@@ -39,50 +41,70 @@ namespace OBase
 
     LinkedListLayer::~LinkedListLayer()
     {
-        Destory();
+        Destroy();
     }
 
     void LinkedListLayer::OnAttach()
     {
         Init();
+        OpenGLDebugger::DisableDebug();
     }
 
     void LinkedListLayer::OnDetach()
     {
-        Destory();
+        Destroy();
     }
 
     void LinkedListLayer::OnUpdate(Timestep ts)
     {
-        glClearBufferfv(GL_COLOR, 0, glm::value_ptr(m_opaqueBackgroundColor));
+        glClearBufferfv(GL_COLOR, 0, glm::value_ptr(m_backgroundColor));
 
+        /// 初始化 头节点链表
         m_HeadPointTexture->Bind();
-        GLuint clearVal = 0xFFFFFFFF;
+        constexpr GLuint clearVal = 0xFFFFFFFF;
         m_HeadPointTexture->Clear(0, &clearVal);
         m_HeadPointTexture->UnBind();
+        m_HeadPointTexture->BindImage(2);
 
-        m_TriangleShader->Bind();
-        constexpr glm::mat4 model(1.0);
-        m_TriangleShader->setMat4("model", model);
+        /// 初始化 原子计数器
+        GLuint zero = 0;
+        glNamedBufferSubData(m_AtomicCounterBuffer, 0, sizeof(GLuint), &zero);
+        glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 3, m_AtomicCounterBuffer);
+
+        m_LinkedNodeBuffer->UpdateData(0,0,nullptr);
+
+        glm::mat4 model(1.0);
+
         m_CaseVertexArray->Bind();
+        m_TriangleShader->Bind();
 
+        m_TriangleShader->setMat4("model", model);
+        m_TriangleShader->setVec4("uColor", showColor_1);
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_CaseVertexArray->GetIndexBuffer()->GetCount()), GL_UNSIGNED_INT, nullptr);
 
-         m_Render2ScreenShader->Bind();
-         glDrawArrays(GL_TRIANGLES, 0, 6);
+        model = glm::translate(model, glm::vec3(0.1,0.0,0.1));
+        m_TriangleShader->setMat4("model", model);
+        m_TriangleShader->setVec4("uColor", showColor_2);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_CaseVertexArray->GetIndexBuffer()->GetCount()), GL_UNSIGNED_INT, nullptr);
+
+        model = glm::translate(glm::mat4(1.0), glm::vec3(0.2,0.0,-0.1));
+        m_TriangleShader->setMat4("model", model);
+        m_TriangleShader->setVec4("uColor", showColor_3);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_CaseVertexArray->GetIndexBuffer()->GetCount()), GL_UNSIGNED_INT, nullptr);
+
+        m_Render2ScreenShader->Bind();
+        m_Render2ScreenShader->setVec4("backgroundColor", m_backgroundColor);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
     void LinkedListLayer::OnImGuiRender()
     {
         ImGui::Begin("Settings panel");
-        ImGui::ColorEdit4("backgroundColor", glm::value_ptr(m_opaqueBackgroundColor), ImGuiColorEditFlags_NoAlpha);
-        ImGui::ColorEdit4("showColor1", glm::value_ptr(showColor_1), ImGuiColorEditFlags_NoAlpha);
+        ImGui::ColorEdit4("backgroundColor", glm::value_ptr(m_backgroundColor), ImGuiColorEditFlags_NoAlpha);
+        ImGui::ColorEdit4("showColor1", glm::value_ptr(showColor_1));
+        ImGui::ColorEdit4("showColor2", glm::value_ptr(showColor_2));
+        ImGui::ColorEdit4("showColor3", glm::value_ptr(showColor_3));
         ImGui::End();
-
-        m_MatrixUniformBuffer->Bind();
-        m_MatrixUniformBuffer->UpdateElementData("Color", glm::value_ptr(showColor_1));
-        m_MatrixUniformBuffer->UnBind();
-
     }
 
     void LinkedListLayer::Init()
@@ -141,15 +163,15 @@ namespace OBase
         m_MatrixUniformBuffer->UpdateElementData("Color", glm::value_ptr(glm::vec4(1.0, 0.0, 0.0, 1.0)));
         m_MatrixUniformBuffer->UnBind();
 
+        GLuint cval = 0;
         glCreateBuffers(1, &m_AtomicCounterBuffer);
-        glNamedBufferData(m_AtomicCounterBuffer, sizeof(GLuint), nullptr, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-        glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, m_AtomicCounterBuffer);
+        glNamedBufferStorage(m_AtomicCounterBuffer, sizeof(GLuint), &cval, GL_DYNAMIC_STORAGE_BIT);
+        glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 3, m_AtomicCounterBuffer);
 
         InitLinkedListRes();
     }
 
-    void LinkedListLayer::Destory()
+    void LinkedListLayer::Destroy()
     {
         m_CaseVertexArray.reset();
         m_TriangleShader.reset();
@@ -174,7 +196,7 @@ namespace OBase
             glDeleteBuffers(1, &m_AtomicCounterBuffer);
         }
 
-        /// init 
+        /// init
         const auto & currentWindow = Application::Get().GetWindow();
         const auto windowW = currentWindow.GetWidth();
         const auto windowH = currentWindow.GetHeight();
@@ -194,10 +216,7 @@ namespace OBase
         m_HeadPointTexture = Texture::Create(static_cast<int>(windowW), static_cast<int>(windowH), 
             GL_R32UI, MultiSample::None);
         m_HeadPointTexture->Create();
-
-        m_HeadPointTexture->Bind();
-        glBindImageTexture(2, m_HeadPointTexture->RenderID(), 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32UI);  ///< 绑定到绑定点
-        m_HeadPointTexture->UnBind();
+        m_HeadPointTexture->BindImage(2);
     }
 
     void LinkedListLayer::OnResizeEvent(const Event &event)

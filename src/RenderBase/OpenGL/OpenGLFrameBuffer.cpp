@@ -80,7 +80,7 @@ namespace OBase
         }
 
         GLenum attachment;
-        switch (const auto format = m_depthAttachment ? m_depthAttachment->format() : GL_DEPTH24_STENCIL8;
+        switch (const auto format = m_depthAttachment ? m_depthAttachment->InternalFormat() : GL_DEPTH24_STENCIL8;
         format)
         {
         case GL_DEPTH24_STENCIL8:

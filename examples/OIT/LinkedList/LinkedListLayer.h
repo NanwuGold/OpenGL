@@ -4,10 +4,9 @@
 #include <RenderBase/Core/Layer.h>
 #include <RenderBase/pointer_ptr.hpp>
 #include <RenderBase/Geometry/BoundingBox.h>
+#include <RenderBase/Render/Texture.h>
 
 #include <glm/glm.hpp>
-
-#include "RenderBase/Render/Texture.h"
 
 namespace OBase
 {
@@ -40,13 +39,17 @@ namespace OBase
 
     protected:
         void Init();
-        void Destory();
+        void Destroy();
         void InitLinkedListRes();
 
         void OnResizeEvent(const Event &event);
     private:
-        glm::vec4 m_opaqueBackgroundColor{0.2,0.3,0.4,1.0};
-        glm::vec4 showColor_1{0.0,1.0,0.0,1.0};
+        glm::vec4 m_backgroundColor{0.2,0.3,0.4,1.0};
+
+        glm::vec4 showColor_1{0.0,1.0,0.0,0.5};
+        glm::vec4 showColor_2{1.0,0.0,0.0,0.5};
+        glm::vec4 showColor_3{0.0,0.0,1.0,0.5};
+
         Ref<VertexArray> m_CaseVertexArray;
         Ref<OpenGLShader> m_TriangleShader;
         Ref<OpenGLShader> m_Render2ScreenShader;
