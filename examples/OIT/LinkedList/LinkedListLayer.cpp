@@ -55,33 +55,10 @@ namespace OBase
     void LinkedListLayer::OnUpdate(Timestep ts)
     {
         glClearBufferfv(GL_COLOR, 0, glm::value_ptr(m_backgroundColor));
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // glDepthMask( GL_FALSE );
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glDepthMask( GL_FALSE );
+        ClearBuffer();
 
-        // ClearBuffer();
-        /// 初始化 原子计数器
-//        GLuint zero = 0;
-//        glNamedBufferSubData(m_AtomicCounterBuffer, 0, sizeof(GLuint), &zero);
-//        glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 3, m_AtomicCounterBuffer);
-
-#if 1
-        {
-            GLuint zero = 0;
-            glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 3, buffers[0] );
-            glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint), &zero);
-
-
-            const auto &currentWindow = Application::Get().GetWindow();
-            const auto windowW = currentWindow.GetWidth();
-            const auto windowH = currentWindow.GetHeight();
-
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, clearBuf);
-            glBindTexture(GL_TEXTURE_2D, headPtrTex);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, windowW, windowH, GL_RED_INTEGER,
-                            GL_UNSIGNED_INT, NULL);
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-        }
-#endif
         glm::mat4 model(1.0);
 
         m_CaseVertexArray->Bind();
@@ -106,9 +83,14 @@ namespace OBase
         m_TriangleShader->setVec4("uColor", showColor_4);
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_CaseVertexArray->GetIndexBuffer()->GetCount()), GL_UNSIGNED_INT, nullptr);
 
-        glFinish();
+        model = glm::translate(glm::mat4(1.0), glm::vec3(0.4, 0.0, 0.5));
+        m_TriangleShader->setMat4("model", model);
+        m_TriangleShader->setVec4("uColor", showColor_5);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_CaseVertexArray->GetIndexBuffer()->GetCount()), GL_UNSIGNED_INT, nullptr);
 
+        glFinish();
         glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
         m_Render2ScreenShader->Bind();
         m_Render2ScreenShader->setVec4("backgroundColor", m_backgroundColor);
@@ -120,14 +102,12 @@ namespace OBase
         /// 初始化 原子计数器
         GLuint zero = 0;
         glNamedBufferSubData(m_AtomicCounterBuffer, 0, sizeof(GLuint), &zero);
-        glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 3, m_AtomicCounterBuffer);
 
         /// 初始化 头节点链表
         m_HeadPointTexture->Bind();
         GLuint cl = 0xffffffff;
         m_HeadPointTexture->Clear(0, &cl);
         m_HeadPointTexture->UnBind();
-        m_HeadPointTexture->BindImage(2);
     }
 
     void LinkedListLayer::OnImGuiRender()
@@ -175,48 +155,14 @@ namespace OBase
             m_CaseVertexArray->SetIndexBuffer(indexBuffer);
         }
 
+        const auto &currentWindow = Application::Get().GetWindow();
+        const auto windowW = currentWindow.GetWidth();
+        const auto windowH = currentWindow.GetHeight();
+
         InitUniformBuffer();
-        // InitAtomicCounterBuffer();
-//        InitLinkedListRes();
-
-#if  1
-        enum BufferNames
-        {
-            COUNTER_BUFFER = 0,
-            LINKED_LIST_BUFFER
-        };
-
-        {
-            const auto &currentWindow = Application::Get().GetWindow();
-            const auto windowW = currentWindow.GetWidth();
-            const auto windowH = currentWindow.GetHeight();
-
-            glGenBuffers(2, buffers.data());
-            GLuint maxNodes = MaxFragments * windowW * windowH;
-            GLint nodeSize = 5 * sizeof(GLfloat) + sizeof(GLuint); // The size of a linked list node
-
-            glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 3, buffers[BufferNames::COUNTER_BUFFER]);
-            glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
-
-            // The buffer for the head pointers, as an image texture
-            glGenTextures(1, &headPtrTex);
-            glBindTexture(GL_TEXTURE_2D, headPtrTex);
-            glTexStorage2D(GL_TEXTURE_2D, 1, GL_R32UI, windowW, windowH);
-            glBindImageTexture(2, headPtrTex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32UI);
-
-            // The buffer of linked lists
-            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffers[BufferNames::LINKED_LIST_BUFFER]);
-            glBufferData(GL_SHADER_STORAGE_BUFFER, maxNodes * nodeSize, NULL, GL_DYNAMIC_DRAW);
-
-            std::vector<GLuint> headPtrClearBuf(windowW*windowH, 0xffffffff);
-            glGenBuffers(1, &clearBuf);
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, clearBuf);
-            glBufferData(GL_PIXEL_UNPACK_BUFFER, headPtrClearBuf.size() * sizeof(GLuint),
-                         &headPtrClearBuf[0], GL_STATIC_COPY);
-
-        }
-#endif
-
+        InitAtomicCounterBuffer();
+        InitHeadPointTexture(windowW, windowH);
+        InitLinkedListRes();
     }
 
     void LinkedListLayer::InitUniformBuffer()
@@ -245,12 +191,10 @@ namespace OBase
 
     void LinkedListLayer::InitAtomicCounterBuffer()
     {
-        GLuint cval = 0;
+        constexpr GLuint ClearVal = 0;
         glCreateBuffers(1, &m_AtomicCounterBuffer);
-        glNamedBufferStorage(m_AtomicCounterBuffer, sizeof(GLuint), &cval, GL_DYNAMIC_DRAW);
+        glNamedBufferData(m_AtomicCounterBuffer, sizeof(GLuint), &ClearVal, GL_DYNAMIC_DRAW);
         glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 3, m_AtomicCounterBuffer);
-        // glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
-
     }
 
     void LinkedListLayer::Destroy()
@@ -270,13 +214,7 @@ namespace OBase
 
     void LinkedListLayer::InitLinkedListRes()
     {
-        m_HeadPointTexture.reset();
         m_LinkedNodeBuffer.reset();
-
-        if (glIsBuffer(m_AtomicCounterBuffer))
-        {
-            glDeleteBuffers(1, &m_AtomicCounterBuffer);
-        }
 
         /// init
         const auto &currentWindow = Application::Get().GetWindow();
@@ -295,6 +233,12 @@ namespace OBase
         m_LinkedNodeBuffer = ShaderStorageBuffer::Create(sizeof(Node) * maxNodeCounts);
         m_LinkedNodeBuffer->ReLinkBindingPoint(1);
 
+    }
+
+    void LinkedListLayer::InitHeadPointTexture(const uint32_t windowW, const uint32_t windowH)
+    {
+        m_HeadPointTexture.reset();
+
         m_HeadPointTexture = Texture::Create(static_cast<int>(windowW), static_cast<int>(windowH),
                                              GL_R32UI, MultiSample::None);
         m_HeadPointTexture->Create();
@@ -309,6 +253,7 @@ namespace OBase
         InitLinkedListRes();
         auto w = event.GetWidth();
         auto h = event.GetHeight();
+        InitHeadPointTexture(w, h);
         glViewport(0,0,w,h);
     }
 } // OBase

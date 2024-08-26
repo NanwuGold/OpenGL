@@ -57,6 +57,7 @@ namespace OBase
         glm::vec4 showColor_2{1.0, 0.0, 0.0, 0.5};
         glm::vec4 showColor_3{0.0, 0.0, 1.0, 0.5};
         glm::vec4 showColor_4{1.0, 0.5, 0.0, 0.5};
+        glm::vec4 showColor_5{0.6, 0.5, 0.0, 0.5};
 
         Ref<VertexArray> m_CaseVertexArray;
         Ref<OpenGLShader> m_TriangleShader;
@@ -75,6 +76,7 @@ namespace OBase
         unsigned int headPtrTex;
         unsigned int clearBuf;
 
+        void InitHeadPointTexture(const uint32_t windowW, const uint32_t windowH);
     };
 
 }
