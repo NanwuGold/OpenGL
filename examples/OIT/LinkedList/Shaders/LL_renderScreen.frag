@@ -1,6 +1,6 @@
 #version 450 core
 
-#define MAXNODECOUNT 10
+#define MAXNODECOUNT 20
 
 struct Node
 {
@@ -9,16 +9,14 @@ struct Node
     uint next;
 };
 
-layout(binding = 2, r32ui) uniform uimage2D headPointerImage;
-layout(std430, binding = 1) buffer NodeBuffer
+layout(binding = 1, std430) buffer NodeBuffer
 {
     Node nodes[];
 };
+layout(binding = 2, r32ui) uniform uimage2D headPointerImage;
 
 uniform vec4 backgroundColor;
-
 out vec4 vFragColor;
-in vec2 vTexCoord;
 
 void main()
 {
@@ -64,20 +62,11 @@ void main()
     {
         vec4 srcColor = nodeLists[i].color;
         float srcAlpha = srcColor.a;
-        if(isnan(srcAlpha))
-        {
-            srcAlpha = 0.0;
-        }
         float dstAlpha = color.a;
 
         float outAlpha = dstAlpha + srcAlpha - dstAlpha * srcAlpha;
-        if(isnan(outAlpha))
-        {
-            outAlpha = 0.;
-        }
         vec3 outColor = (srcColor.rgb * srcAlpha + color.rgb * dstAlpha * (1.0 - srcAlpha)) / outAlpha;
-        // color = vec4(outColor, outAlpha);
-        color = vec4(outColor, 1.0);
+        color = vec4(outColor, outAlpha);
     }
 
     /// 最终的颜色

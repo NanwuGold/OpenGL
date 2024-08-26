@@ -7,6 +7,8 @@
 #include <RenderBase/Render/Texture.h>
 
 #include <glm/glm.hpp>
+#include <array>
+#include "RenderBase/Event/ApplicationEvent.h"
 
 namespace OBase
 {
@@ -20,14 +22,14 @@ class OpenGLShader;
 namespace OBase
 {
     class LinkedListLayer final : public Layer
-     {
+    {
     public:
-        explicit LinkedListLayer(const std::string& name);
+        explicit LinkedListLayer(const std::string &name);
 
-        LinkedListLayer(LinkedListLayer&) = delete;
-        LinkedListLayer(const LinkedListLayer&&) = delete;
-        LinkedListLayer& operator=(LinkedListLayer&) = delete;
-        LinkedListLayer& operator=(const LinkedListLayer&&) = delete;
+        LinkedListLayer(LinkedListLayer &) = delete;
+        LinkedListLayer(const LinkedListLayer &&) = delete;
+        LinkedListLayer &operator=(LinkedListLayer &) = delete;
+        LinkedListLayer &operator=(const LinkedListLayer &&) = delete;
 
         ~LinkedListLayer() override;
         void OnAttach() override;
@@ -35,20 +37,26 @@ namespace OBase
         void OnUpdate(Timestep ts) override;
         void OnImGuiRender() override;
 
-        void OnEvent(Event& event) override;
+        void OnEvent(Event &event) override;
 
     protected:
         void Init();
         void Destroy();
         void InitLinkedListRes();
 
-        void OnResizeEvent(const Event &event);
-    private:
-        glm::vec4 m_backgroundColor{0.2,0.3,0.4,1.0};
+        void OnResizeEvent(const OBase::WindowResizeEvent &event);
 
-        glm::vec4 showColor_1{0.0,1.0,0.0,0.5};
-        glm::vec4 showColor_2{1.0,0.0,0.0,0.5};
-        glm::vec4 showColor_3{0.0,0.0,1.0,0.5};
+        void InitAtomicCounterBuffer();
+        void InitUniformBuffer();
+        void ClearBuffer();
+
+    private:
+        glm::vec4 m_backgroundColor{0.2, 0.3, 0.4, 1.0};
+
+        glm::vec4 showColor_1{0.0, 1.0, 0.0, 0.5};
+        glm::vec4 showColor_2{1.0, 0.0, 0.0, 0.5};
+        glm::vec4 showColor_3{0.0, 0.0, 1.0, 0.5};
+        glm::vec4 showColor_4{1.0, 0.5, 0.0, 0.5};
 
         Ref<VertexArray> m_CaseVertexArray;
         Ref<OpenGLShader> m_TriangleShader;
@@ -56,12 +64,19 @@ namespace OBase
         Ref<UniformBuffer> m_MatrixUniformBuffer;
         BoundingBox m_box{};
 
-        Ref<Texture> m_HeadPointTexture;   ///< 链表头节点指针缓冲
-        Ref<ShaderStorageBuffer> m_LinkedNodeBuffer;   ///< 链表节点缓冲
-        uint32_t m_AtomicCounterBuffer{0};
+        Ref<Texture> m_HeadPointTexture;             ///< 链表头节点指针缓冲
+        Ref<ShaderStorageBuffer> m_LinkedNodeBuffer; ///< 链表节点缓冲
+        unsigned int m_AtomicCounterBuffer{0};
+        std::vector<GLuint> m_HeadPtrClearBuf;
+
+    protected:
+
+        std::array<unsigned int, 2> buffers;
+        unsigned int headPtrTex;
+        unsigned int clearBuf;
 
     };
 
 }
 
-#endif //OPENGL_DEPTHPEELINGLAYER_H
+#endif // OPENGL_DEPTHPEELINGLAYER_H
