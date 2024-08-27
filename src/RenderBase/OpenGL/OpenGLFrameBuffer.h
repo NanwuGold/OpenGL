@@ -1,33 +1,45 @@
 #ifndef OPENGL_RENDERBASE_OPENGLFRAMEBUFFER_H
 #define OPENGL_RENDERBASE_OPENGLFRAMEBUFFER_H
 
-#include "RenderBase/Render/FrameBuffer.h"
+#include <unordered_map>
+#include <RenderBase/Render/FrameBuffer.h>
 
-class OpenGLFrameBuffer :public FrameBuffer
+namespace OBase
 {
-public:
+    class OpenGLFrameBuffer final : public FrameBuffer
+    {
+    public:
+        OpenGLFrameBuffer();
+        ~OpenGLFrameBuffer() override;
 
-    OpenGLFrameBuffer();
+        OpenGLFrameBuffer(const OpenGLFrameBuffer&) = default;
+        OpenGLFrameBuffer(OpenGLFrameBuffer&&) = default;
+        
+        OpenGLFrameBuffer& operator=(const OpenGLFrameBuffer&) = default;
+        OpenGLFrameBuffer& operator=(OpenGLFrameBuffer&&) = default;
 
-    void Create(std::vector<OBase::Ref<Texture>> colorAttachments, OBase::Ref<Texture> depth) override;
+        void Create(std::vector<Ref<Texture>> colorAttachments, Ref<Texture> depth) override;
 
-    void Bind() override;
+        void Bind() override;
 
-    void Resize(int w, int h) override;
+        void Resize(int w, int h) override;
 
-    void UnBind() override;
+        void UnBind() override;
 
-    unsigned RenderID() override;
+        uint32_t RenderID() override;
 
+        std::shared_ptr<Texture> GetAttachment(const FramebufferAttachment& index) override;
 
-private:
-    void Invalidate();
+    protected:
+        void Invalidate();
 
-private:
-    unsigned int m_RendererID;
-    std::vector<OBase::Ref<Texture>> m_colorAttachments;
-    OBase::Ref<Texture> m_depthAttachment;
+    private:
+        uint32_t m_RendererID;
+        std::vector<Ref<Texture>> m_colorAttachments;
+        std::unordered_map<FramebufferAttachment, Ref<Texture>> m_Attachments;
+        Ref<Texture> m_depthAttachment;
+    };
+}
 
-};
 
 #endif //OPENGL_RENDERBASE_OPENGLFRAMEBUFFER_H

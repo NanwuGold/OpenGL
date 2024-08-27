@@ -3,14 +3,21 @@
 
 namespace OBase
 {
-	class Context
-	{
-	public:
-		virtual ~Context() = default;
-		Context() = default;
-		virtual void Init() = 0;
-		virtual void SwapBuffers() = 0;
-	};
+    class Context
+    {
+    public:
+        virtual ~Context() = default;
+        Context() = default;
+
+        Context(const Context&) = delete;
+        Context(Context&&) = delete;
+
+        Context& operator=(const Context&) = delete;
+        Context& operator=(Context&&) = delete;
+
+        virtual void Init() = 0;
+        virtual void SwapBuffers() = 0;
+    };
 
 }
 

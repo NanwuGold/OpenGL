@@ -1,16 +1,23 @@
 #ifndef HAZEL_OPENGLBUFFER_H
 #define HAZEL_OPENGLBUFFER_H
 
-#include "RenderBase/Render/Buffer.h"
+#include <RenderBase/Render/Buffer.h>
 
 namespace OBase
 {
-    class OpenGLVertexBuffer : public VertexBuffer
+    class OpenGLVertexBuffer final: public VertexBuffer
     {
     public:
-        explicit OpenGLVertexBuffer(uint32_t size);
+        OpenGLVertexBuffer() = delete;
 
-        explicit OpenGLVertexBuffer(float *vertices, uint32_t size);
+        explicit OpenGLVertexBuffer(uint32_t size);
+        explicit OpenGLVertexBuffer(const float *vertices, uint32_t size);
+
+        OpenGLVertexBuffer(const OpenGLVertexBuffer&) = delete;
+        OpenGLVertexBuffer(OpenGLVertexBuffer &&) = delete;
+
+        OpenGLVertexBuffer& operator=(const OpenGLVertexBuffer&) = delete;
+        OpenGLVertexBuffer& operator=(OpenGLVertexBuffer&&) = delete;
 
         ~OpenGLVertexBuffer() override;
 
@@ -30,10 +37,16 @@ namespace OBase
 
     };
 
-    class OpenGLIndexBuffer : public IndexBuffer
+    class OpenGLIndexBuffer final: public IndexBuffer
     {
     public:
-        OpenGLIndexBuffer(uint32_t *indices, uint32_t count);
+        OpenGLIndexBuffer(OpenGLIndexBuffer&) = delete;
+        OpenGLIndexBuffer(OpenGLIndexBuffer&&) = delete;
+
+        OpenGLIndexBuffer& operator=(const OpenGLIndexBuffer&) = delete;
+        OpenGLIndexBuffer& operator=(OpenGLIndexBuffer&&) = delete;
+
+        OpenGLIndexBuffer(const uint32_t *indices, uint32_t count);
 
         ~OpenGLIndexBuffer() override;
 

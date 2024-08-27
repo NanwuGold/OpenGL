@@ -1,7 +1,10 @@
 #include "FrameBuffer.h"
 #include "RenderBase/OpenGL/OpenGLFrameBuffer.h"
 
-OBase::Ref<FrameBuffer> FrameBuffer::Create()
+namespace OBase
 {
-    return OBase::CreateRef<OpenGLFrameBuffer>();
+    Ref<FrameBuffer> FrameBuffer::Create()
+    {
+        return OBase::CreateRef<OpenGLFrameBuffer>();
+    }
 }

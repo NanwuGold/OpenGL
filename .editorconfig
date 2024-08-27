@@ -12,9 +12,9 @@ ij_continuation_indent_size = 8
 ij_formatter_off_tag = @formatter:off
 ij_formatter_on_tag = @formatter:on
 ij_formatter_tags_enabled = false
-ij_smart_tabs = false
+ij_smart_tabs = true
 ij_visual_guides = none
-ij_wrap_on_typing = false
+ij_wrap_on_typing = true
 
 [{*.c,*.c++,*.cc,*.cp,*.cpp,*.cu,*.cuh,*.cxx,*.h,*.h++,*.hh,*.hp,*.hpp,*.hxx,*.i,*.icc,*.ii,*.inl,*.ino,*.ipp,*.m,*.mm,*.pch,*.tcc,*.tpp}]
 ij_c_add_brief_tag = true

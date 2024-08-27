@@ -1,9 +1,9 @@
 #include "OpenGLShader.h"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <glad/glad.h>
-
 #include <glm/gtc/type_ptr.hpp>
 
 OpenGLShader::OpenGLShader(const char* vertex_path, const char* fragment_path, const char* geometry_path)
@@ -64,12 +64,12 @@ OpenGLShader::OpenGLShader(const char* vertex_path, const char* fragment_path, c
     vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vertexShaderSource, nullptr);
  glCompileShader(vertex);
-    checkCompileErrors(vertex, shaderType::vertexShader);
+    checkCompileErrors(vertex, ShaderType::VertexShader);
 
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fragmentShaderSource, nullptr);
     glCompileShader(fragment);
-    checkCompileErrors(fragment, shaderType::fragmentShader);
+    checkCompileErrors(fragment, ShaderType::FragmentShader);
 
     unsigned int geometry;
     if (geometry_path != nullptr)
@@ -78,7 +78,7 @@ OpenGLShader::OpenGLShader(const char* vertex_path, const char* fragment_path, c
         geometry = glCreateShader(GL_GEOMETRY_SHADER);
         glShaderSource(geometry, 1, &geometryShaderSource, nullptr);
         glCompileShader(geometry);
-        checkCompileErrors(geometry, shaderType::geometryShader);
+        checkCompileErrors(geometry, ShaderType::GeometryShader);
     }
 
     // 着色器程序
@@ -92,7 +92,7 @@ OpenGLShader::OpenGLShader(const char* vertex_path, const char* fragment_path, c
     }
 
     glLinkProgram(m_program);
-    checkCompileErrors(m_program, shaderType::programShader);
+    checkCompileErrors(m_program, ShaderType::ProgramShader);
 
     glDeleteShader(vertex);
     glDeleteShader(fragment);
@@ -138,7 +138,7 @@ OpenGLShader::~OpenGLShader()
     glUniform2f(location, x, y);
 }
 
-[[maybe_unused]] void OpenGLShader::setVec3(const std::string& name, glm::vec3 & value) const
+[[maybe_unused]] void OpenGLShader::setVec3(const std::string& name, const glm::vec3 &value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform3fv(location, 1, &value[0]);
@@ -150,7 +150,7 @@ OpenGLShader::~OpenGLShader()
     glUniform3f(location, x, y, z);
 }
 
-[[maybe_unused]] void OpenGLShader::setVec4(const std::string& name, glm::vec4& value) const
+[[maybe_unused]] void OpenGLShader::setVec4(const std::string& name, const glm::vec4 &value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniform4fv(location, 1, &value[0]);
@@ -174,30 +174,30 @@ OpenGLShader::~OpenGLShader()
     glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void OpenGLShader::setMat4(const std::string& name, glm::mat4& value) const
+void OpenGLShader::setMat4(const std::string& name, const glm::mat4 &value) const
 {
     const auto location = glGetUniformLocation(m_program, name.c_str());
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void OpenGLShader::checkCompileErrors(const unsigned shader, const shaderType type)
+void OpenGLShader::checkCompileErrors(const unsigned shader, const ShaderType type)
 {
     int success{1};
     char infoLog[1024];
     switch (type)
     {
-    case shaderType::vertexShader:
-    case shaderType::fragmentShader:
-    case shaderType::geometryShader:
+    case ShaderType::VertexShader:
+    case ShaderType::FragmentShader:
+    case ShaderType::GeometryShader:
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success)
         {
             glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-            std::cout << "ERROR::SHADER::COMPILATION_FAILED of type: " << (type == shaderType::vertexShader ? "VERTEX" : (type == shaderType::fragmentShader ? "FRAGMENT" : "GEOMETRY"))
+            std::cout << "ERROR::SHADER::COMPILATION_FAILED of type: " << (type == ShaderType::VertexShader ? "VERTEX" : (type == ShaderType::FragmentShader ? "FRAGMENT" : "GEOMETRY"))
                       << "\n" << infoLog << std::endl;
         }
         break;
-    case shaderType::programShader:
+    case ShaderType::ProgramShader:
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success)
         {

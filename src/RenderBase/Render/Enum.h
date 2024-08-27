@@ -10,12 +10,12 @@
 
 namespace OGLShader
 {
-    enum class shaderType
+    enum class ShaderType
     {
-        vertexShader,
-        fragmentShader,
-        geometryShader,
-        programShader
+        VertexShader,
+        FragmentShader,
+        GeometryShader,
+        ProgramShader
     };
 }
 #endif //RENDERENUM_H
