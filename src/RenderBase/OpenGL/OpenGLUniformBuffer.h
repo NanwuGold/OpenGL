@@ -27,7 +27,7 @@ namespace OBase
         uint8_t BindPoint() override;
     protected:
         void invaild();
-        void UpdateData(uint32_t offset, uint32_t size, const void *data);
+        void UpdateData(uint32_t offset, uint32_t size, const void *data) const;
 
     private:
         unsigned int m_RenderID;

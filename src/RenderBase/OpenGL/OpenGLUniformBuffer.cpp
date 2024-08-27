@@ -29,7 +29,7 @@ namespace OBase
         // glBufferData(GL_UNIFORM_BUFFER, 0, nullptr, GL_STATIC_DRAW);
     }
 
-    void OpenGLUniformBuffer::UpdateData(const uint32_t offset, const uint32_t size, const void *data)
+    void OpenGLUniformBuffer::UpdateData(const uint32_t offset, const uint32_t size, const void *data) const
     {
         glNamedBufferSubData(m_RenderID, offset, size, data);
     }
