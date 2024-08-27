@@ -19,15 +19,37 @@ namespace OBase
         explicit Layer(std::string name = "Layer");
         virtual ~Layer();
 
+        /**
+         * @brief 层被添加时触发
+         */
         [[maybe_unused]] virtual void OnAttach();
+
+        /**
+         * @brief 层被移除时触发
+         */
         [[maybe_unused]] virtual void OnDetach();
 
+        /**
+         * @brief 每一帧更新函数
+         * @param ts 时间
+         */
         virtual void OnUpdate(Timestep ts);
 
-        virtual void OnEvent(Event &event);
-
+        /**
+         * @brief 更新IMGUI的组件的信息
+         */
         virtual void OnImGuiRender();
 
+        /**
+         * @brief 分发事件
+         * @param event
+         */
+        virtual void OnEvent(Event &event);
+
+        /**
+         * @brief 获取Layer的名字
+         * @return std::string
+         */
         [[nodiscard]] const std::string &GetName() const;
 
     protected:
