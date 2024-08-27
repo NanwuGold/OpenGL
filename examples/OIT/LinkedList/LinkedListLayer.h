@@ -48,7 +48,8 @@ namespace OBase
 
         void InitAtomicCounterBuffer();
         void InitUniformBuffer();
-        void ClearBuffer();
+        void InitHeadPointTexture(const uint32_t windowW, const uint32_t windowH);
+        void ClearBuffer() const;
 
     private:
         glm::vec4 m_backgroundColor{0.2, 0.3, 0.4, 1.0};
@@ -69,14 +70,6 @@ namespace OBase
         Ref<ShaderStorageBuffer> m_LinkedNodeBuffer; ///< 链表节点缓冲
         unsigned int m_AtomicCounterBuffer{0};
         std::vector<GLuint> m_HeadPtrClearBuf;
-
-    protected:
-
-        std::array<unsigned int, 2> buffers;
-        unsigned int headPtrTex;
-        unsigned int clearBuf;
-
-        void InitHeadPointTexture(const uint32_t windowW, const uint32_t windowH);
     };
 
 }

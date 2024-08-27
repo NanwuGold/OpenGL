@@ -97,19 +97,6 @@ namespace OBase
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    void LinkedListLayer::ClearBuffer()
-    {
-        /// 初始化 原子计数器
-        GLuint zero = 0;
-        glNamedBufferSubData(m_AtomicCounterBuffer, 0, sizeof(GLuint), &zero);
-
-        /// 初始化 头节点链表
-        m_HeadPointTexture->Bind();
-        GLuint cl = 0xffffffff;
-        m_HeadPointTexture->Clear(0, &cl);
-        m_HeadPointTexture->UnBind();
-    }
-
     void LinkedListLayer::OnImGuiRender()
     {
         ImGui::Begin("Settings panel");
@@ -118,6 +105,7 @@ namespace OBase
         ImGui::ColorEdit4("showColor2", glm::value_ptr(showColor_2));
         ImGui::ColorEdit4("showColor3", glm::value_ptr(showColor_3));
         ImGui::ColorEdit4("showColor4", glm::value_ptr(showColor_4));
+        ImGui::ColorEdit4("showColor5", glm::value_ptr(showColor_5));
         ImGui::End();
     }
 
@@ -178,8 +166,8 @@ namespace OBase
 
         const CameraFunc cameraFunc(m_box, glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0));
         const auto view = glm::lookAt(cameraFunc.getPosition(), cameraFunc.getTarget(), glm::vec3(0, 1.0, 0.0));
-        glm::vec3 min = m_box.min();
-        glm::vec3 max = m_box.max();
+        const glm::vec3 min = m_box.min();
+        const glm::vec3 max = m_box.max();
         glm::mat4 projection = glm::ortho(min.x, max.x, min.y, max.y, 0.01f, 10.0f);
 
         m_MatrixUniformBuffer->Bind();
@@ -244,16 +232,29 @@ namespace OBase
         m_HeadPointTexture->Create();
         m_HeadPointTexture->BindImage(2);
 
-        m_HeadPtrClearBuf = std::vector(windowW * windowH, 0xffffffff);
+        m_HeadPtrClearBuf = std::vector(static_cast<std::vector<unsigned>::size_type>(windowH) * windowW, 0xffffffff);
+    }
+
+    void LinkedListLayer::ClearBuffer() const
+    {
+        /// 初始化 原子计数器
+        constexpr  GLuint zero = 0;
+        glNamedBufferSubData(m_AtomicCounterBuffer, 0, sizeof(GLuint), &zero);
+
+        /// 初始化 头节点链表
+        m_HeadPointTexture->Bind();
+        constexpr GLuint cl = 0xffffffff;
+        m_HeadPointTexture->Clear(0, &cl);
+        m_HeadPointTexture->UnBind();
     }
 
     void LinkedListLayer::OnResizeEvent(const WindowResizeEvent &event)
     {
         OBASE_INFO(event)
         InitLinkedListRes();
-        auto w = event.GetWidth();
-        auto h = event.GetHeight();
+        const auto w = event.GetWidth();
+        const auto h = event.GetHeight();
         InitHeadPointTexture(w, h);
-        glViewport(0,0,w,h);
+        glViewport(0,0,static_cast<GLsizei>(w),static_cast<GLsizei>(h));
     }
 } // OBase

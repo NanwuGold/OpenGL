@@ -65,7 +65,7 @@ void main()
         float dstAlpha = color.a;
 
         float outAlpha = dstAlpha + srcAlpha - dstAlpha * srcAlpha;
-        vec3 outColor = (srcColor.rgb * srcAlpha + color.rgb * dstAlpha * (1.0 - srcAlpha)) / outAlpha;
+        vec3 outColor = (srcColor.rgb * srcAlpha + color.rgb * dstAlpha * (1.0 - srcAlpha));
         color = vec4(outColor, outAlpha);
     }
 
