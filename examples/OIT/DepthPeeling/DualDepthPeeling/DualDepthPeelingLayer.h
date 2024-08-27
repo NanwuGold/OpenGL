@@ -4,12 +4,11 @@
 #include <glad/glad.h>
 #include <RenderBase/Core/Layer.h>
 
-#include <imgui.h>
-#include <glm/gtc/type_ptr.hpp>
 #include <glm/vec3.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-#include <RenderBase/Render/VertexArray.h>
 #include <RenderBase/OpenGL/OpenGLShader.h>
+#include <RenderBase/Render/VertexArray.h>
 
 #include <RenderBase/Geometry/BoundingBox.h>
 #include <RenderBase/Render/FrameBuffer.h>
