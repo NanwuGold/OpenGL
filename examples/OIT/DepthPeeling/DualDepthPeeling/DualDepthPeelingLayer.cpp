@@ -7,6 +7,7 @@
 #include <RenderBase/Camera/CameraFunc.h>
 
 #include <random>
+#include <imgui.h>
 
 namespace
 {
