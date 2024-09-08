@@ -49,18 +49,18 @@ namespace OBase
             case ElementDataType::Float:
                 return 4;
             case ElementDataType::Float2:
-                return 32;
+                return 8;          // 8 bytes
             case ElementDataType::Float3:
-                return 48;
+                return 16;         // 12 bytes, but aligned to 16 bytes in std140
             case ElementDataType::Float4:
-                return 64;
+                return 16;         // 16 bytes
             case ElementDataType::Int:
             case ElementDataType::Bool:
                 return 4;
             case ElementDataType::Matrix:
                 return 64;
             case ElementDataType::Vec2:
-                return 8;
+                return 16;             // 8 bytes, but aligned to 16 bytes in std140
             case ElementDataType::Vec3:
             case ElementDataType::Vec4:
                 return 16;

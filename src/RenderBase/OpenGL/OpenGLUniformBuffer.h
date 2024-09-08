@@ -26,7 +26,7 @@ namespace OBase
 
         uint8_t BindPoint() override;
     protected:
-        void invaild();
+        void invalid();
         void UpdateData(uint32_t offset, uint32_t size, const void *data) const;
 
     private:

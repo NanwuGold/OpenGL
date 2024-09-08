@@ -9,7 +9,7 @@ namespace OBase
         , m_BindPoint(bindPoint)
         , m_UniformLayout(layout)
     {
-        invaild();
+        invalid();
     }
 
     void OpenGLUniformBuffer::Bind()
@@ -22,7 +22,7 @@ namespace OBase
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
-    void OpenGLUniformBuffer::invaild()
+    void OpenGLUniformBuffer::invalid()
     {
         glCreateBuffers(1, &m_RenderID);
         glNamedBufferData(m_RenderID, m_Size, nullptr, GL_STATIC_DRAW);
@@ -60,10 +60,9 @@ namespace OBase
     void OpenGLUniformBuffer::UpdateElementData(const std::string &name, const void *data)
     {
         auto elements = m_UniformLayout.GetElements();
-        auto item = std::find_if(elements.begin(),elements.end(),[name](UniformLayoutElement & element){
+        if(const auto item = std::find_if(elements.begin(),elements.end(),[name](const UniformLayoutElement & element){
             return element.m_Name == name;
-        });
-        if(item != elements.end())
+        }); item != elements.end())
         {
             UpdateData(item->m_Offset, item->m_Size, data);
         }
