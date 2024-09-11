@@ -90,7 +90,7 @@ namespace OBase
         float m_Alpha{0.5};
 
     private:
-        void renderScene(Ref <OpenGLShader> shader, Ref <VertexArray> vao);
+        void renderScene(const Ref <OpenGLShader>& shader, const Ref <VertexArray>& vao) const;
 
         void ClearTex() const;
     };

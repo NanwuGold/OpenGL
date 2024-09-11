@@ -24,9 +24,11 @@ uniform vec4 uColor;
 
 void main()
 {
+    // uint index = imageAtomicAdd(abufferCounter, fragCoord, 1);
     ivec2 fragCoord = ivec2(gl_FragCoord.xy);
-    uint index = imageAtomicAdd(abufferCounter, fragCoord, 1);
     vec4 abufferVal = vec4(uColor.rgb, gl_FragCoord.z);
-    imageStore(abuffers, ivec3(fragCoord, index), abufferVal);
+    imageStore(abuffers, ivec3(fragCoord, imageAtomicAdd(abufferCounter, fragCoord, 1)), abufferVal);
+    memoryBarrierImage();
+
     FragColor = vec4(uColor.rgb, gl_FragCoord.z);
 }

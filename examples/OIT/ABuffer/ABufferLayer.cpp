@@ -59,6 +59,14 @@ namespace OBase
 
         ClearTex();
         renderScene(m_CaseTriangleShader, m_CaseVertexArray);
+
+        glFinish();
+        glMemoryBarrier( GL_TEXTURE_2D_ARRAY );
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+        m_DisplayABufferShader->Bind();
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
     }
 
     void ABufferLayer::ClearTex() const
@@ -67,7 +75,7 @@ namespace OBase
         glClearTexImage(m_ABufferCounterTexId, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &m_ABufferCounterClearValue);
     }
 
-    void ABufferLayer::renderScene(Ref <OpenGLShader> shader, Ref <VertexArray> vao)
+    void ABufferLayer::renderScene(const Ref<OpenGLShader>& shader, const Ref<VertexArray>& vao) const
     {
         vao->Bind();
         shader->Bind();
@@ -136,8 +144,8 @@ namespace OBase
             m_CaseVertexArray->SetIndexBuffer(indexBuffer);
         }
 
-        auto & window = Application::Get().GetWindow();
-        auto windowSize = glm::vec2(window.GetWidth(), window.GetHeight());
+        const auto & window = Application::Get().GetWindow();
+        const auto windowSize = glm::vec2(window.GetWidth(), window.GetHeight());
 
         InitUniformBuffer(windowSize.x, windowSize.y);
         InitABufferTex(windowSize.x, windowSize.y);
