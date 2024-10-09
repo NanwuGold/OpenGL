@@ -11,8 +11,8 @@ layout(std140, binding = 0) uniform Matrix
     float alpha;      ///< 全局的透明度
 };
 
-layout(binding = 1, rgba32f) coherent uniform image2DArray abuffers;   ///< ABuffer
-layout(binding = 2, r32ui) coherent uniform uimage2D abufferCounter;   ///< 计数器
+layout(binding = 1, r32ui) readonly uniform uimage2D abufferCounter;   ///< 计数器
+layout(binding = 2, rgba32f) readonly uniform image2DArray abuffers;   ///< ABuffer
 
 out vec4 vFragColor;
 
@@ -23,10 +23,28 @@ void main()
     ivec2 coord = ivec2(gl_FragCoord.xy);
     int abufferNum = int(imageLoad(abufferCounter, coord).r);   ///< 当前像素位置的片段数量
 
+    if(abufferNum == 0)
+    {
+        vFragColor = backgroundColor;
+        return ;
+    }
+
     for(int i=0; i < abufferNum; i++)
     {
-        fragementList[i] = imageLoad(abuffers,ivec3(coord, i));  ///< 获取当前层的颜色
+        fragementList[i] = imageLoad(abuffers,ivec3(coord, i));  ///< 获取当前层的颜色和深度
     }
+
+    /// 获取最近的颜色
+    int minIndex = 0;
+    for(int i = 0; i < abufferNum; i++)
+    {
+        if(fragementList[i].z < fragementList[minIndex].z)
+        {
+            minIndex = i;
+        }
+    }
+    vFragColor = vec4(fragementList[minIndex].xyz, 1.0);
+    return ;
 
     /// TODO: sort fragmentList
     vec4 finalColor = vec4(0.0);

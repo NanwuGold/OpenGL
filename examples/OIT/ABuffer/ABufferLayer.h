@@ -68,6 +68,7 @@ namespace OBase
 
         [[maybe_unused]] unsigned int m_ABufferTexId;
         [[maybe_unused]] unsigned int m_ABufferCounterTexId;
+        [[maybe_unused]] unsigned int m_ABufferSemphoresTexId;
 
 
         std::vector<glm::vec3> m_Pos{{0.0, 0.0, 0.0},
