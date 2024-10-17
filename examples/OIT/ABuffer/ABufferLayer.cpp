@@ -25,7 +25,8 @@ namespace OBase
     void ABufferLayer::OnEvent(Event &event)
     {
         EventDispatcher dispatcher(event);
-        dispatcher.Dispatch<WindowResizeEvent>([this](auto &&event){
+        dispatcher.Dispatch<WindowResizeEvent>([this](auto &&event)
+                                               {
                                                    OnResizeEvent(std::forward<decltype(event)>(event));
                                                    return false; });
     }
@@ -54,32 +55,47 @@ namespace OBase
     void ABufferLayer::OnUpdate(Timestep ts)
     {
         glClearBufferfv(GL_COLOR, 0, glm::value_ptr(m_BackgroundColor));
-        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);
         glClear(GL_DEPTH_BUFFER_BIT);
 
         ClearTex();
-        renderScene(m_CaseTriangleShader, m_CaseVertexArray);
 
+        const CameraFunc cameraFunc(m_Box, glm::vec3(0.0, 0.0, 2.0), glm::vec3(0.0));
+        const auto view = glm::lookAt(cameraFunc.getPosition(), cameraFunc.getTarget(), glm::vec3(0, 1.0, 0.0));
+        const glm::vec3 min = m_Box.min();
+        const glm::vec3 max = m_Box.max();
+        glm::mat4 projection = glm::ortho(min.x, max.x, min.y, max.y, 1e-5f, 100.0f);
+
+        m_CaseTriangleShader->Bind();
+        m_CaseTriangleShader->setMat4("viewMat",view);
+        m_CaseTriangleShader->setMat4("projectMat",projection);
+
+        renderScene(m_CaseTriangleShader, m_CaseVertexArray);
         glFinish();
         glMemoryBarrier( GL_TEXTURE_2D_ARRAY );
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+        /// TODO: show a-buffer
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         m_DisplayABufferShader->Bind();
         glDrawArrays(GL_TRIANGLES, 0, 6);
-
     }
 
     void ABufferLayer::ClearTex() const
     {
-        glClearTexImage(m_ABufferTexId, 0, GL_RGBA, GL_FLOAT, glm::value_ptr(m_AbufferClearValue));
+        glBindTexture(GL_TEXTURE_2D_ARRAY, m_ABufferTexId); // 如果是 2D 数组纹理
+        glClearTexImage(m_ABufferTexId, 0, GL_RGBA, GL_FLOAT, nullptr);
+
         glClearTexImage(m_ABufferCounterTexId, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &m_ABufferCounterClearValue);
+        glClearTexImage(m_ABufferSemphoresTexId, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &m_ABufferCounterClearValue);
     }
 
-    void ABufferLayer::renderScene(const Ref<OpenGLShader>& shader, const Ref<VertexArray>& vao) const
+    void ABufferLayer::renderScene(const Ref<OpenGLShader> &shader, const Ref<VertexArray> &vao) const
     {
         vao->Bind();
         shader->Bind();
-        for(auto index = 0; index < m_Pos.size(); index++)
+        auto size = m_Pos.size();
+        size = 5;
+        for (auto index = 0; index < size ; index++)
         {
             glm::mat4 model = glm::translate(glm::mat4(1.0), m_Pos[index]);
             shader->setMat4("model", model);
@@ -93,11 +109,11 @@ namespace OBase
         ImGui::Begin("Settings panel");
         ImGui::ColorEdit4("backgroundColor", glm::value_ptr(m_BackgroundColor), ImGuiColorEditFlags_NoAlpha);
 
-        for(auto index = 0; index < m_Pos.size(); index++)
+        for (auto index = 0; index < m_Pos.size(); index++)
         {
             ImGui::ColorEdit4(("showColor" + std::to_string(index)).c_str(), glm::value_ptr(m_Colors[index]),
                               ImGuiColorEditFlags_NoAlpha);
-            ImGui::DragFloat3(("Position" + std::to_string(index)).c_str(), glm::value_ptr(m_Pos[index]),0.005, -1.0,
+            ImGui::DragFloat3(("Position" + std::to_string(index)).c_str(), glm::value_ptr(m_Pos[index]), 0.005, -1.0,
                               1.0);
         }
 
@@ -106,16 +122,15 @@ namespace OBase
 
         m_MatrixUniformBuffer->UpdateElementData("backgroundColor", glm::value_ptr(m_BackgroundColor));
         m_MatrixUniformBuffer->UpdateElementData("alpha", &m_Alpha);
-
     }
 
     void ABufferLayer::Init()
     {
         m_CaseTriangleShader = CreateRef<OpenGLShader>("./Shaders/ABuffer_triangle.vert", "./Shaders/ABuffer_triangle.frag");
         m_DisplayABufferShader = CreateRef<OpenGLShader>("./Shaders/DisplayABuffer.vert", "./Shaders/DisplayABuffer.frag");
-        m_ClearAbufferShader = CreateRef<OpenGLShader>("./Shaders/ABuffer_triangle.vert", "./Shaders/ABuffer_clearAbuffer.frag");
+        m_ClearAbufferShader = CreateRef<OpenGLShader>("./Shaders/DisplayABuffer.vert", "./Shaders/ABuffer_clearAbuffer.frag");
 
-        m_Box = BoundingBox(glm::dvec3(-2), glm::dvec3(2));
+        m_Box = BoundingBox(glm::dvec3(-1), glm::dvec3(1));
 
         m_CaseVertexArray = VertexArray::Create();
         {
@@ -144,7 +159,7 @@ namespace OBase
             m_CaseVertexArray->SetIndexBuffer(indexBuffer);
         }
 
-        const auto & window = Application::Get().GetWindow();
+        const auto &window = Application::Get().GetWindow();
         const auto windowSize = glm::vec2(window.GetWidth(), window.GetHeight());
 
         InitUniformBuffer(windowSize.x, windowSize.y);
@@ -156,19 +171,22 @@ namespace OBase
         const UniformLayout layout = {
             {ElementDataType::Matrix, "viewMat"},
             {ElementDataType::Matrix, "projectMat"},
-            {ElementDataType::Vec2,"windowSize"},
-            {ElementDataType::Vec4,"backgroundColor"},
-            {ElementDataType::Float, "alpha"}
-        };
+            {ElementDataType::Vec2, "windowSize"},
+            {ElementDataType::Vec4, "backgroundColor"},
+            {ElementDataType::Float, "alpha"}};
 
         m_MatrixUniformBuffer = UniformBuffer::Create(layout, 0);
         m_MatrixUniformBuffer->LinkBindingPoint();
 
-        const CameraFunc cameraFunc(m_Box, glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0));
+        const CameraFunc cameraFunc(m_Box, glm::vec3(0.0, 0.0, 2.0), glm::vec3(0.0));
         const auto view = glm::lookAt(cameraFunc.getPosition(), cameraFunc.getTarget(), glm::vec3(0, 1.0, 0.0));
         const glm::vec3 min = m_Box.min();
         const glm::vec3 max = m_Box.max();
-        glm::mat4 projection = glm::ortho(min.x, max.x, min.y, max.y, 0.01f, 10.0f);
+        glm::mat4 projection = glm::ortho(min.x, max.x, min.y, max.y, 1e-5f, 100.0f);
+
+        m_CaseTriangleShader->Bind();
+        m_CaseTriangleShader->setMat4("viewMat",view);
+        m_CaseTriangleShader->setMat4("projectMat",projection);
 
         auto windowSize = glm::vec2(w, h);
 
@@ -184,7 +202,7 @@ namespace OBase
 
     void ABufferLayer::InitABufferTex(const unsigned int w, const unsigned int h)
     {
-        if(glIsTexture(m_ABufferTexId))
+        if (glIsTexture(m_ABufferTexId))
         {
             glDeleteTextures(1, &m_ABufferTexId);
         }
@@ -194,26 +212,41 @@ namespace OBase
             glDeleteTextures(1, &m_ABufferCounterTexId);
         }
 
-        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_ABufferTexId);
-
-        glTextureParameteri(m_ABufferTexId, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTextureParameteri(m_ABufferTexId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        GLint maxLayers = 0;
-        glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxLayers);
-        if(maxLayers > MaxFragments)
+        /// 初始化计数纹理
         {
-            maxLayers = MaxFragments;
+            glCreateTextures(GL_TEXTURE_2D, 1, &m_ABufferCounterTexId);
+            glTextureStorage2D(m_ABufferCounterTexId, 1, GL_R32UI, w, h);
+            glTextureParameteri(m_ABufferCounterTexId, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTextureParameteri(m_ABufferCounterTexId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glBindImageTexture(1, m_ABufferCounterTexId, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32UI);
         }
 
-        glTextureStorage3D(m_ABufferTexId, 1, GL_RGBA32F, w, h, maxLayers);
-        glBindImageTexture(1, m_ABufferTexId, 0, GL_TRUE, 0, GL_READ_WRITE, GL_RGBA32F);
 
-        glCreateTextures(GL_TEXTURE_2D, 1 , &m_ABufferCounterTexId);
-        glTextureStorage2D(m_ABufferCounterTexId, 1,  GL_R32UI, w, h);
-        glTextureParameteri(m_ABufferCounterTexId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(m_ABufferCounterTexId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindImageTexture(2, m_ABufferCounterTexId, 0, false, 0, GL_READ_WRITE, GL_R32UI);
+        {
+            glGenTextures(1, &m_ABufferTexId);
+            glBindTexture(GL_TEXTURE_2D_ARRAY, m_ABufferTexId);
+
+            // 分配内存，不上传数据
+            glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32F, w, h, MaxFragments);
+
+            // 设置纹理参数
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+
+            glBindImageTexture(2, m_ABufferTexId, 0, GL_TRUE, 0, GL_READ_WRITE, GL_RGBA32F);
+        }
+
+        {
+            /// 初始化加锁的纹理
+            glCreateTextures(GL_TEXTURE_2D, 1, &m_ABufferSemphoresTexId);
+            glTextureStorage2D(m_ABufferSemphoresTexId, 1, GL_R32UI, w, h);
+            glTextureParameteri(m_ABufferSemphoresTexId, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTextureParameteri(m_ABufferSemphoresTexId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glBindImageTexture(3, m_ABufferSemphoresTexId, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32UI);
+        }
     }
 
     void ABufferLayer::Destroy()
@@ -246,9 +279,12 @@ namespace OBase
 
             auto projection = glm::ortho(-orthoW / 2.0f, orthoW / 2.0f, -orthH / 2.0f, orthH / 2.0f, 0.01f, 100.0f);
             m_MatrixUniformBuffer->UpdateElementData("projectMat", glm::value_ptr(projection));
+
+            m_CaseTriangleShader->Bind();
+            m_CaseTriangleShader->setMat4("projectMat", projection);
         }
 
         /// update view Port
-        glViewport(0,0,static_cast<GLsizei>(w),static_cast<GLsizei>(h));
+        glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
     }
 } // OBase

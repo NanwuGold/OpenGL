@@ -11,8 +11,8 @@ layout(std140, binding = 0) uniform Matrix
     float alpha;      ///< 全局的透明度
 };
 
-layout(binding = 1, rgba32f) coherent uniform image2DArray abuffers;   ///< ABuffer
-layout(binding = 2, r32ui) coherent uniform uimage2D abufferCounter;   ///< 计数器
+layout(binding = 1, r32ui) readonly uniform uimage2D abufferCounter;   ///< 计数器
+layout(binding = 2, rgba32f) readonly uniform image2DArray abuffers;   ///< ABuffer
 
 out vec4 vFragColor;
 
@@ -23,81 +23,64 @@ void main()
     ivec2 coord = ivec2(gl_FragCoord.xy);
     int abufferNum = int(imageLoad(abufferCounter, coord).r);   ///< 当前像素位置的片段数量
 
-    for(int i=0; i < abufferNum; i++)
+    if(abufferNum == 0)
     {
-        fragementList[i] = imageLoad(abuffers,ivec3(coord, i));  ///< 获取当前层的颜色
+        vFragColor = backgroundColor;
+        return ;
     }
 
-    /// TODO: sort fragmentList
-    vec4 finalColor = vec4(0.0);
-    float calcAlpha = 0.0;
+    for(int i = 0; i < abufferNum; i++)
+    {
+        fragementList[i] = imageLoad(abuffers,ivec3(coord, i));  ///< 获取当前层的颜色和深度
+    }
+
     /// 对获取的节点排序
     for(int i = 0; i < abufferNum - 1; i++)
     {
         for(int j = i + 1; j < abufferNum; j++)
         {
-            if(fragementList[i].z > fragementList[j].z)
+            if(fragementList[i].y > fragementList[j].y)
             {
                 vec4 temp = fragementList[i];
                 fragementList[i] = fragementList[j];
                 fragementList[j] = temp;
             }
         }
-
-        finalColor = fragementList[0];
-        calcAlpha = 0.5f;
     }
 
-
-    finalColor = finalColor + backgroundColor * (1.0f - calcAlpha);
-
-    /// just out closet layer
-    vFragColor = vec4(finalColor);
-
-}
-
-void sortAndOutput()
-{
-    #if  0
-    vec2 frageCoord = gl_FragCoord.xy;
-
-    uint head = imageLoad(headPointerImage, ivec2(frageCoord)).r;
-
-    /// 收集当前片段的列表的所有颜色以及深度
-    /// 并计算最终的颜色
-    Node nodeLists[MAXNODECOUNT];
-    int nodeCount = 0;
-    uint headTemp = head;
-    while(headTemp != 0xffffffff && nodeCount < MAXNODECOUNT)
-    {
-        nodeLists[nodeCount] = nodes[headTemp];   /// 从SSBO中获取节点
-        headTemp = nodeLists[nodeCount].next;     /// 获取下一个节点
-        nodeCount++;                             /// 下次循环时，下一个节点的存储的索引
-    }
-
-    /// 计算最终着色
     vec4 color = backgroundColor;
-    if(nodeCount == 0)
-    {
-        vFragColor = backgroundColor;
-        return ;
-    }
 
-    /// front to back的方式合并颜色
-    for(int i = 0; i < nodeCount; i++)
+    vec4 outColor = fragementList[0];
+    float colorFloat = outColor.r;
+    color = unpackUnorm4x8(floatBitsToUint(colorFloat));
+
+    for(int i = 1; i < abufferNum; i++)
     {
-        vec4 srcColor = nodeLists[i].color;
-        float srcAlpha = srcColor.a;
-        float dstAlpha = color.a;
+        vec4 outColor = fragementList[i];
+        float colorFloat = outColor.r;
+
+        vec4 srcColor = color;
+        float srcAlpha = color.a;
+
+        vec4 dstColor = unpackUnorm4x8(floatBitsToUint(colorFloat));
+        float dstAlpha = srcColor.a;
 
         float outAlpha = dstAlpha + srcAlpha - dstAlpha * srcAlpha;
-        vec3 outColor = (srcColor.rgb * srcAlpha + color.rgb * dstAlpha * (1.0 - srcAlpha));
-        color = vec4(outColor, outAlpha);
+        vec3 resColor = (srcColor.rgb * srcAlpha + dstColor.rgb * dstAlpha * (1.0 - srcAlpha));
+
+        color = vec4(resColor, outAlpha);
     }
 
-    /// 最终的颜色
+    /// 合并背景色与剥离的层
+    vec4 srcColor = color;
+    float srcAlpha = color.a;
+
+    vec4 dstColor = backgroundColor;
+    float dstAlpha = dstColor.a;
+
+    float outAlpha = dstAlpha + srcAlpha - dstAlpha * srcAlpha;
+    vec3 resColor = (srcColor.rgb * srcAlpha + dstColor.rgb * dstAlpha * (1.0 - srcAlpha));
+
+    color = vec4(resColor, outAlpha);
     vFragColor = color;
-    #endif
 }
-
-

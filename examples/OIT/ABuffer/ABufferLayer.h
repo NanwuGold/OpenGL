@@ -68,20 +68,21 @@ namespace OBase
 
         [[maybe_unused]] unsigned int m_ABufferTexId;
         [[maybe_unused]] unsigned int m_ABufferCounterTexId;
-
+        [[maybe_unused]] unsigned int m_ABufferSemphoresTexId;
 
         std::vector<glm::vec3> m_Pos{{0.0, 0.0, 0.0},
-                                     {0.1, 0.0, 0.1},
-                                     {0.2, 0.0, 0.3},
-                                     {0.3, 0.0, 0.4},
-                                     {0.4, 0.0, 0.5}
+                                     {0.1, 0.0, -0.1},
+                                     {0.2, 0.0, -0.2},
+                                     {0.3, 0.2, -0.15},
+                                     {0.4, 0.0, -0.3}
                                      };
+
         std::vector<glm::vec4> m_Colors{
                 {0.0, 1.0, 0.0, 0.5},
                 {1.0, 0.0, 0.0, 0.5},
-                {0.0, 0.0, 1.0, 0.5},
+                {0.0, 0.0, 1.0, 0.6},
                 {1.0, 0.5, 0.0, 0.5},
-                {0.6, 0.5, 0.0, 0.5}
+                {0.6, 0.5, 0.5, 0.5}
         };
 
 
