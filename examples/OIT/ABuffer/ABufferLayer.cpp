@@ -44,7 +44,6 @@ namespace OBase
     void ABufferLayer::OnAttach()
     {
         Init();
-        OpenGLDebugger::DisableDebug();
     }
 
     void ABufferLayer::OnDetach()
@@ -73,7 +72,6 @@ namespace OBase
         renderScene(m_CaseTriangleShader, m_CaseVertexArray);
         glFinish();
         glMemoryBarrier( GL_TEXTURE_2D_ARRAY );
-
         /// TODO: show a-buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         m_DisplayABufferShader->Bind();
@@ -94,7 +92,6 @@ namespace OBase
         vao->Bind();
         shader->Bind();
         auto size = m_Pos.size();
-        size = 5;
         for (auto index = 0; index < size ; index++)
         {
             glm::mat4 model = glm::translate(glm::mat4(1.0), m_Pos[index]);
@@ -111,17 +108,17 @@ namespace OBase
 
         for (auto index = 0; index < m_Pos.size(); index++)
         {
+#if  0
             ImGui::ColorEdit4(("showColor" + std::to_string(index)).c_str(), glm::value_ptr(m_Colors[index]),
                               ImGuiColorEditFlags_NoAlpha);
+#endif
             ImGui::DragFloat3(("Position" + std::to_string(index)).c_str(), glm::value_ptr(m_Pos[index]), 0.005, -1.0,
                               1.0);
         }
 
-        ImGui::DragFloat("Global Alpha value: ", &m_Alpha, 0.001, 0.0, 1.0);
         ImGui::End();
 
         m_MatrixUniformBuffer->UpdateElementData("backgroundColor", glm::value_ptr(m_BackgroundColor));
-        m_MatrixUniformBuffer->UpdateElementData("alpha", &m_Alpha);
     }
 
     void ABufferLayer::Init()
